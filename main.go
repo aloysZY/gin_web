@@ -11,21 +11,29 @@ import (
 	"time"
 
 	"github.com/aloysZy/gin_web/global"
+	"github.com/aloysZy/gin_web/internal/model"
 	"github.com/aloysZy/gin_web/internal/routers"
 	"github.com/aloysZy/gin_web/pkg/setting"
 )
 
 func init() {
+	// 初始化配置文件
 	if err := setupSetting(); err != nil {
 		log.Fatalf("init.setupSetting err:%v", err)
 	}
+	// 初始化 MySQL
+	if err := setupMysqlDBEngin(); err != nil {
+		log.Fatalf("init.setupMysqlDBEngin err:%v", err)
+	}
 }
 
+// setupSetting初始化配置文件
 func setupSetting() error {
 	newSetting, err := setting.NewSetting()
 	if err != nil {
 		return err
 	}
+	// 输入的这个key，就是配置文件中的 key
 	if err := newSetting.ReadSection("Server", &global.ServerSetting); err != nil {
 		return err
 	}
@@ -33,6 +41,17 @@ func setupSetting() error {
 		return err
 	}
 	if err := newSetting.ReadSection("Database", &global.DatabaseSetting); err != nil {
+		return err
+	}
+	return nil
+}
+
+// setupMysqlDBEngin 初始化 MySQL
+func setupMysqlDBEngin() error {
+	// 这里一定要是"=",初始化全局变量,不然其他包调用的时候依然是 nil
+	var err error
+	global.MysqlDBEngine, err = model.NewMysqlDBEngine(global.DatabaseSetting.Mysql)
+	if err != nil {
 		return err
 	}
 	return nil
