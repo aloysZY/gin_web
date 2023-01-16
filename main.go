@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -9,17 +10,43 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/routers"
+	"github.com/aloysZy/gin_web/pkg/setting"
 )
 
+func init() {
+	if err := setupSetting(); err != nil {
+		log.Fatalf("init.setupSetting err:%v", err)
+	}
+}
+
+func setupSetting() error {
+	newSetting, err := setting.NewSetting()
+	if err != nil {
+		return err
+	}
+	if err := newSetting.ReadSection("Server", &global.ServerSetting); err != nil {
+		return err
+	}
+	if err := newSetting.ReadSection("APP", &global.AppSetting); err != nil {
+		return err
+	}
+	if err := newSetting.ReadSection("Database", &global.DatabaseSetting); err != nil {
+		return err
+	}
+	return nil
+}
+
 func main() {
+	fmt.Printf("global.ServerSetting:%#v\nglobal.AppSeting:%#v\nglobal.DatabaseSetting.Mysql:%#v\n", global.ServerSetting, global.AppSetting, global.DatabaseSetting.Mysql)
 	router := routers.NewRouter()
 	// 不使用 run 启动，自定义配置服务参数
 	s := &http.Server{
-		Addr:           ":8080",
+		Addr:           ":" + global.ServerSetting.HttpPort,
 		Handler:        router,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
+		ReadTimeout:    global.ServerSetting.ReadTimeout,
+		WriteTimeout:   global.ServerSetting.WriteTimeout,
 		MaxHeaderBytes: 1 << 20,
 	}
 	// 开启一个goroutine启动服务
