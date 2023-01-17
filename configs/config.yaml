@@ -1,14 +1,24 @@
 #服务配置
 Server:
-  RunMode: debug
-  HttpPort: 8000
+  Name: gin_web
+  RunMode: debug  #控制日志输出位置
+  HttpPort: 8080
   ReadTimeout: 60
   WriteTimeout: 60
 #  应用配置
 App:
+#  Model: dev
+  Level: debug  #日志输出级别
   LogSavePath: storage/logs
-  LogFileName: app
+  LogFileName: gin_web
   LogFileExt: .log
+  LocalTime: true  #格式化时间
+  Compress: false  #压缩，默认不压缩
+  MaxSize: 1  #单位是 MB
+  MaxBackups: 2
+  MaxAge: 1
+  DefaultPageSize: 20
+  MaxPageSize: 100
 #数据库配置
 Database:
   mysql:

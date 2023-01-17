@@ -1,0 +1,77 @@
+definitions:
+  errcode.Error:
+    type: object
+  model.Tag:
+    properties:
+      created_by:
+        type: string
+      created_on:
+        type: integer
+      deleted_on:
+        type: integer
+      id:
+        type: integer
+      is_del:
+        type: integer
+      modified_by:
+        type: string
+      modified_on:
+        type: integer
+      name:
+        description: 名称
+        type: string
+      status:
+        description: 状态
+        type: string
+    type: object
+info:
+  contact: {}
+  description: 练习 Gin 写 web 服务
+  termsOfService: https://github.com/aloysZY/gin_web
+  title: gin_web
+  version: "1.0"
+paths:
+  /api/v1/tags:
+    post:
+      parameters:
+      - description: 标签名称
+        in: body
+        maxLength: 100
+        minLength: 3
+        name: name
+        required: true
+        schema:
+          type: string
+      - default: 1
+        description: 状态
+        enum:
+        - 0
+        - 1
+        in: body
+        name: state
+        schema:
+          type: integer
+      - description: 创建者
+        in: body
+        maxLength: 100
+        minLength: 3
+        name: created_by
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.Tag'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 新增标签
+swagger: "2.0"

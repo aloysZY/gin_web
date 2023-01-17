@@ -54,6 +54,7 @@ func (e *Error) WithDetails(details ...string) *Error {
 	return &newError
 }
 
+// StatusCode 根据错误码，匹配返回的状态码
 func (e *Error) StatusCode() int {
 	switch e.Code() {
 	case Success.Code():
