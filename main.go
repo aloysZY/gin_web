@@ -13,6 +13,7 @@ import (
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/model"
 	"github.com/aloysZy/gin_web/internal/routers"
+	"github.com/aloysZy/gin_web/pkg/logger"
 	"github.com/aloysZy/gin_web/pkg/setting"
 )
 
@@ -20,6 +21,10 @@ func init() {
 	// 初始化配置文件
 	if err := setupSetting(); err != nil {
 		log.Fatalf("init.setupSetting err:%v", err)
+	}
+	// 初始化日志
+	if err := setupLogger(); err != nil {
+		log.Fatalf("init.setupLogger err:%v", err)
 	}
 	// 初始化 MySQL
 	if err := setupMysqlDBEngin(); err != nil {
@@ -43,6 +48,17 @@ func setupSetting() error {
 	if err := newSetting.ReadSection("Database", &global.DatabaseSetting); err != nil {
 		return err
 	}
+	// 默认是纳秒，将传入的时间转化为秒
+	global.ServerSetting.ReadTimeout *= time.Second
+	global.ServerSetting.WriteTimeout *= time.Second
+	return nil
+}
+
+// 初始化日志
+func setupLogger() error {
+	if err := logger.NewLogger(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -61,6 +77,13 @@ func main() {
 	fmt.Printf("global.ServerSetting:%#v\nglobal.AppSeting:%#v\nglobal.DatabaseSetting.Mysql:%#v\n", global.ServerSetting, global.AppSetting, global.DatabaseSetting.Mysql)
 	router := routers.NewRouter()
 	// 不使用 run 启动，自定义配置服务参数
+	// https://blog.csdn.net/yanyuan_smartisan/article/details/113357813
+	// ReadTimeout覆盖了从连接被接受到请求body被完全读取的时间（如果你确实读取了正文，否则就是到header结束）。它的实现是在net/http中，通过在Accept后立即调用SetReadDeadline来实现的。s
+	// WriteTimeout通过在readRequest结束时调用SetWriteDeadline来设置，通常覆盖从请求header读取结束到响应写入结束（也就是ServeHTTP的生存期）的时间。
+	// WriteTimeout通过在readRequest结束时调用SetWriteDeadline来设置，通常覆盖从请求header读取结束到响应写入结束（也就是ServeHTTP的生存期）的时间。[参考]
+	// 但是，当连接是HTTPS时，SetWriteDeadline在Accept之后立即被调用，以便它也覆盖作为TLS握手的一部分而写入的数据包。令人烦恼的是，这意味着（只在这种情况下）WriteTimeout最终包括读取头部和等待第一个字节的时间。[参考]
+	// 在处理不受信任的客户端和/或网络时，应该将这两个超时都设置上，以便客户端无法通过慢读写来长时间持有连接。
+	// 最后是http.TimeoutHandler。它不是服务器参数，而是一个限制ServeHTTP调用最大duration的Handler包装器。它的工作方式是缓冲响应，并在超过最后期限时发送504 Gateway Timeout。注意，它在1.6中被破坏并在1.6.2中得到修复。[参考]
 	s := &http.Server{
 		Addr:           ":" + global.ServerSetting.HttpPort,
 		Handler:        router,
@@ -70,7 +93,7 @@ func main() {
 	}
 	// 开启一个goroutine启动服务
 	go func() {
-		log.Printf("[%v]ListenAndServe: %v Actual pid is %d", "gin_web", s.Addr, syscall.Getpid())
+		log.Printf("[%v]ListenAndServe%v Actual pid is %d", global.ServerSetting.Name, s.Addr, syscall.Getpid())
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("s.ListenAndServe err: %v", err)
 		}

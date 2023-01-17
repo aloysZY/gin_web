@@ -6,17 +6,25 @@ import "time"
 
 // ServerSettingS 服务配置
 type ServerSettingS struct {
+	Name         string
 	RunMode      string
-	HttpPort     string
+	HttpPort     string // 这里是字符串，因为后面和字符串组合了
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 }
 
 // AppSettingS 应用配置
 type AppSettingS struct {
+	// Model string  #和RunMode设置为一个级别吧
+	Level       string // 日志级别
 	LogSavePath string
 	LogFileName string
 	LogFileExt  string
+	MaxSize     int
+	MaxBackups  int
+	MaxAge      int
+	LocalTime   bool
+	Compress    bool
 }
 
 // MysqlSettingS MySQL 配置
@@ -29,7 +37,7 @@ type MysqlSettingS struct {
 	DBName       string
 	TablePrefix  string
 	Charset      string
-	ParseTime    string
+	ParseTime    bool
 	MaxIdleConns int
 	MaxOpenConns int
 }
