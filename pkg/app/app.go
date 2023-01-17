@@ -1,3 +1,4 @@
+// Package app 对返回数据进行封装
 package app
 
 import (
@@ -20,6 +21,7 @@ type Pager struct {
 	TotalRows int `json:"total_rows"`
 }
 
+// NewResponse 返回数据初始化
 func NewResponse(ctx *gin.Context) *Response {
 	return &Response{
 		Ctx: ctx,

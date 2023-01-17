@@ -1,3 +1,4 @@
+// Package errcode 定义错误码
 package errcode
 
 // code 是根据需求来定义的

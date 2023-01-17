@@ -1,3 +1,4 @@
+// Package model 数据库相关模型
 package model
 
 import (

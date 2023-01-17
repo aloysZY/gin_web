@@ -1,8 +1,10 @@
+// Package routers 总路由
 package routers
 
 import (
 	"net/http"
 
+	"github.com/aloysZy/gin_web/internal/middleware"
 	v1 "github.com/aloysZy/gin_web/internal/routers/app/v1"
 	"github.com/aloysZy/gin_web/pkg/logger"
 	"github.com/gin-gonic/gin"
@@ -16,10 +18,11 @@ import (
 func NewRouter() *gin.Engine {
 	r := gin.Default() // default就初始化两个中间件了
 	// r := gin.New() // 使用自己的中间件
-	// 添加日志后设置中间件
-	r.Use(logger.GinLogger(), logger.GinRecovery(true))
-	// 初始化，以后 api 版本变更，直接更换初始化的方法就行了
+	// 添加日志后设置中间件,添加翻译器中间件
+	r.Use(logger.GinLogger(), logger.GinRecovery(true), middleware.Translations())
+	// swagger 路由
 	r.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
+	// 初始化，以后 api 版本变更，直接更换初始化的方法就行了
 	tag := v1.NewTag()
 	// 创建路由组
 	apiV1 := r.Group("/api/v1")

@@ -1,3 +1,4 @@
+// Package setting 配置文件对于结构体
 package setting
 
 import "time"

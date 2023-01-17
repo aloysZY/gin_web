@@ -1,3 +1,4 @@
+// Package service 入参校验
 package service
 
 type CountTagRequest struct {
@@ -12,8 +13,10 @@ type TagListRequest struct {
 
 // CreateTagRequest 创建标签入参校验
 type CreateTagRequest struct {
+	// 这里还是有一个问题，不知道为什么created_by不能找到，添加json tag后能找到了
+	// 最后发现，createdby 不添加 json 也可以，应该是"-"导致的问题，以后入参不要写下横线
 	Name      string `form:"name" binding:"required,min=2,max=100"`
-	CreatedBy string `form:"created_by" binding:"required,min=2,max=100"`
+	CreatedBy string `form:"createdBy" binding:"required,min=2,max=100"` // min 和 max 限制的是长度 2-100
 	State     uint8  `form:"state,default=1" binding:"oneof=0 1"`
 }
 

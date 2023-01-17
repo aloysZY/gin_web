@@ -1,3 +1,4 @@
+// Package setting 初始化相关
 package setting
 
 // viper 初始化

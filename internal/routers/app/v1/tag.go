@@ -1,9 +1,12 @@
+// Package v1 对于的相关请求
 package v1
 
 import (
+	"github.com/aloysZy/gin_web/internal/service"
 	"github.com/aloysZy/gin_web/pkg/app"
 	"github.com/aloysZy/gin_web/pkg/errcode"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type Tag struct{}
@@ -24,8 +27,18 @@ func (t Tag) List(c *gin.Context) {}
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/tags [post]
 func (t Tag) Create(c *gin.Context) {
-	app.NewResponse(c).ToErrorResponse(errcode.ServerError)
-	return
+	// app.NewResponse(c).ToErrorResponse(errcode.ServerError)
+	// return
+	response := app.NewResponse(c)
+	param := service.CreateTagRequest{}
+	// 解析参数
+	valid, errs := app.BindAndValid(c, &param)
+	if !valid {
+		zap.L().Error("app.BindAndValid errs:", zap.Error(errs))
+		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
+		return
+	}
+	response.ToResponse(gin.H{})
 }
 
 func (t Tag) Update(c *gin.Context) {}

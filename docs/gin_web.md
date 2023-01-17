@@ -46,3 +46,7 @@ web 应用的基本组件，错误码标准化、配置管理、数据库连接�
 ![image-20230117132219783](/Users/aloys/Documents/Go/code/src/github.com/aloysZy/gin_web/docs/gin_web.assets/image-20230117132219783.png)
 
 要在路由上面写好注解，这样让 wagger 自动生成文档
+
+### 6、入参校验
+
+![image-20230117170944312](/Users/aloys/Documents/Go/code/src/github.com/aloysZy/gin_web/docs/gin_web.assets/image-20230117170944312.png)
