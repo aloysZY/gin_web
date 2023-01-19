@@ -14,9 +14,8 @@ import (
 )
 
 const (
-	LOCALE = "locale"
-	ZH     = "zh"
-	EN     = "en"
+	ZH = "zh"
+	EN = "en"
 )
 
 // Translations 翻译器
@@ -25,8 +24,8 @@ func Translations() gin.HandlerFunc {
 		// 初始化英文、中文、中文简体翻译器
 		uni := ut.New(en.New(), zh.New(), zh_Hant.New())
 		// 请求头获取字段
-		locale := c.GetHeader(LOCALE)
-		// 初始化翻译器
+		locale := c.GetHeader("locale")
+		// 初始化翻译器，根据要翻译的语言
 		trans, _ := uni.GetTranslator(locale)
 		// 修改gin框架中的Validator引擎属性，实现自定制
 		v, ok := binding.Validator.Engine().(*validator.Validate)

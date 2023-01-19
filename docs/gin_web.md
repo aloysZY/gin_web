@@ -39,6 +39,7 @@ web 应用的基本组件，错误码标准化、配置管理、数据库连接�
 
 固定格式流程
 
+<<<<<<< HEAD
 ### 5、创建路由和 swagger
 
 ![image-20230117132204666](/Users/aloys/Documents/Go/code/src/github.com/aloysZy/gin_web/docs/gin_web.assets/image-20230117132204666.png)
@@ -50,3 +51,10 @@ web 应用的基本组件，错误码标准化、配置管理、数据库连接�
 ### 6、入参校验
 
 ![image-20230117170944312](/Users/aloys/Documents/Go/code/src/github.com/aloysZy/gin_web/docs/gin_web.assets/image-20230117170944312.png)
+
+### 7、调用业务逻辑层，进行业务处理
+
+这里就是逻辑调用认证后调用 dao 进行数据库操作
+
+dao 需要的参数在创建数据库后根据数据库 model字段来定义的
+

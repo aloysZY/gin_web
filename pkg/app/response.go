@@ -21,7 +21,7 @@ type Pager struct {
 	TotalRows int `json:"total_rows"`
 }
 
-// NewResponse 返回数据初始化
+// NewResponse 返回上下文
 func NewResponse(ctx *gin.Context) *Response {
 	return &Response{
 		Ctx: ctx,
@@ -36,7 +36,7 @@ func (r *Response) ToResponse(data interface{}) {
 	r.Ctx.JSON(http.StatusOK, data)
 }
 
-// ToResponseList 返回成功数据，根据返回对应页面的数据，根据请求的页码
+// ToResponseList 返回成功数据，根据请求查询的页码，数据量，和totalRows满足条件的数据量
 func (r *Response) ToResponseList(list interface{}, totalRows int) {
 	r.Ctx.JSON(http.StatusOK, gin.H{
 		"list": list,
@@ -48,7 +48,7 @@ func (r *Response) ToResponseList(list interface{}, totalRows int) {
 	})
 }
 
-// ToErrorResponse 方式错误数据
+// ToErrorResponse 放回错误数据
 func (r *Response) ToErrorResponse(err *errcode.Error) {
 	response := gin.H{"code": err.Code(), "msg": err.Msg()}
 	details := err.Details()

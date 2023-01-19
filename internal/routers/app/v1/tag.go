@@ -1,15 +1,19 @@
 // Package v1 对于的相关请求
+// 具体的业务逻辑
 package v1
 
 import (
+	"github.com/aloysZy/gin_web/internal/service"
 	"github.com/aloysZy/gin_web/pkg/app"
 	"github.com/aloysZy/gin_web/pkg/errcode"
-	"github.com/aloysZy/gin_web/pkg/param"
+	"github.com/aloysZy/gin_web/pkg/params"
 	"github.com/gin-gonic/gin"
 )
 
+// Tag 类型别名
 type Tag struct{}
 
+// NewTag Tag 这里的作用是在 router 的时候初始化，路由调用方法
 func NewTag() Tag { return Tag{} }
 
 /*注解	描述
@@ -25,6 +29,8 @@ func NewTag() Tag { return Tag{} }
 // @Param state body int false "状态" Enums(0, 1) default(1)
 // @Param created_by body string false "创建者" minlength(3) maxlength(100)
 
+// http://127.0.0.1:8080/api/v1/tags?page=2&page_size=1,展示第2 夜的，每页是一条数据，所以展示数据库第二条数据
+
 // List 查询标签
 // @Summary 获取多个标签
 // @Description 获取多个标签
@@ -34,20 +40,41 @@ func NewTag() Tag { return Tag{} }
 // @Param state query int false "状态" Enums(0, 1) default(1)
 // @Param page query int false "页码"
 // @Param page_size query int false "每页数量"
-// @Success 200 {object} model.TageSwagger "成功"
+// @Success 200 {object} app.SwaggersTage "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/tags [get]
 func (t Tag) List(c *gin.Context) {
 	response := app.NewResponse(c)
-	params := param.TagListRequest{}
-	// 解析参数
-	b, v := app.BindAndValid(c, &params)
-	if !b {
-		response.ToErrorResponse(errcode.InvalidParams.WithDetails(v.Errors()...))
+	// 1.解析参数
+	param := params.ListTagRequest{}
+	if valid, errs := app.BindAndValid(c, &param); !valid {
+		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
 	}
-	response.ToResponse(gin.H{"name": params.Name, "state": params.State})
+	// 2.业务逻辑处理
+	svc := service.New(c.Request.Context())
+	// 先查询有多少个标签
+	// 解析 URL 传入的页码和每页展示数量
+	pager := app.Pager{
+		Page:     app.GetPage(c),
+		PageSize: app.GetPageSize(c),
+	}
+	totalRows, err := svc.CountTag(&params.CountTagRequest{
+		Name:  param.Name,
+		State: param.State,
+	})
+	if err != nil {
+		response.ToErrorResponse(errcode.ErrorCountTagFail)
+		return
+	}
+	tagList, err := svc.GetTagList(&param, &pager)
+	if err != nil {
+		response.ToErrorResponse(errcode.ErrorGetTagListFail)
+		return
+	}
+	response.ToResponseList(tagList, totalRows)
+
 }
 
 // Create 新增标签
@@ -55,21 +82,27 @@ func (t Tag) List(c *gin.Context) {
 // @Description 添加标签接口
 // @Tags 标签
 // @Produce  json
-// @Param object body param.CreateTagRequest true "创建标签"
-// @Success 200 {object} model.TageSwagger "成功"
+// @Param object body params.CreateTagRequest true "创建标签"
+// @Success 200 {object} docs.TageSwagger "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/tags [post]
 func (t Tag) Create(c *gin.Context) {
 	response := app.NewResponse(c)
-	params := param.CreateTagRequest{}
-	// 解析参数
-	b, v := app.BindAndValid(c, &params)
-	if !b {
-		response.ToErrorResponse(errcode.InvalidParams.WithDetails(v.Errors()...))
+	// 1. 解析参数
+	param := params.CreateTagRequest{State: 1}
+	if valid, errs := app.BindAndValid(c, &param); !valid {
+		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
 	}
-	response.ToResponse(gin.H{"name": params.Name, "createdBy": params.CreatedBy, "state": params.State})
+	// 2.处理业务逻辑 ,c.Request.Context() 请求行下文传入
+	svc := service.New(c.Request.Context())
+	if err := svc.CreateTag(&param); err != nil {
+		response.ToErrorResponse(errcode.ErrorCreateTagFail)
+		return
+	}
+	// 返回请求
+	response.ToResponse(gin.H{})
 }
 
 func (t Tag) Update(c *gin.Context) {}

@@ -8,17 +8,15 @@ import (
 
 // Error 错误结构体
 type Error struct {
-	// 错误码
-	code int `json:"code"`
-	// 错误消息
-	msg string `json:"msg"`
-	// 详细信息
-	details []string `json:"details"`
+	code    int      `json:"code"`    // 错误码
+	msg     string   `json:"msg"`     // 错误消息
+	details []string `json:"details"` // 详细信息
 }
 
+// 实现方法的好处是，创建出来的变量直接可以"."调用
 var codes = map[int]string{}
 
-// NewError 自定义错误K,V,返回错误结构体
+// NewError 自定义错误K,V,返回错误结构体,这是在 new 错误信息的时候进行确认
 func NewError(code int, msg string) *Error {
 	if _, ok := codes[code]; ok {
 		panic(fmt.Sprintf("错误码 %d 已经存在，请更换一个", code))

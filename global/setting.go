@@ -6,7 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// 解析配置文件
+// 解析配置文件需要的结构体
 var (
 	ServerSetting   *setting.ServerSettingS
 	AppSetting      *setting.AppSettingS
@@ -14,8 +14,7 @@ var (
 	MysqlDBEngine   *gorm.DB
 )
 
-// 上下文用到的常量
-
+// Trans 上下文用到的常量
 const (
 	Trans = "trans"
 )

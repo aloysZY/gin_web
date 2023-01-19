@@ -53,7 +53,7 @@ func BindAndValid(c *gin.Context, v interface{}) (bool, ValidErrors) {
 	// 注意：Shouldxxx和bindxxx区别就是bindxxx会在head中添加400的返回信息，而Shouldxxx不会
 	err := c.ShouldBind(v)
 	if err != nil {
-		zap.L().Error("BindAndValid error: ", zap.Error(err))
+		zap.L().Error("c.ShouldBind error: ", zap.Error(err))
 		// 判断是不是ValidationErrors错误类型
 		vErrs, ok := err.(val.ValidationErrors)
 		if !ok {
