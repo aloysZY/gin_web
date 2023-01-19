@@ -19,16 +19,16 @@ type CreateTagRequest struct {
 	// https://juejin.cn/post/7005465902804123679
 	// example:"1"  swagger tag 设置默认值
 
-	Name      string `json:"name" form:"name" binding:"required,min=2,max=100"`             // 名称；min 和 max 限制的是长度 2-100
-	CreatedBy string `json:"created_by" form:"created_by" binding:"required,min=2,max=100"` // 创建人；min 和 max 限制的是长度 2-100s
-	State     uint8  `json:"state" form:"state,default=1" binding:"oneof=0 1" example:"1"`  // 创建状态；默认是 1 状态 0为禁用、1为启用
+	Name      string `form:"name" binding:"required,min=2,max=100"`                         // 名称；min 和 max 限制的是长度 2-100
+	CreatedBy string `json:"created_by" form:"created_by" binding:"required,min=2,max=100"` // 创建人；以后从 token 中获取；min 和 max 限制的是长度 2-100s
+	State     uint8  `form:"state,default=1" binding:"oneof=0 1" example:"1"`               // 创建状态；默认是 1 状态 0为禁用、1为启用
 }
 
 type UpdateTagRequest struct {
-	ID         uint32 `form:"id" binding:"required,gte=1"`
-	Name       string `form:"name" binding:"max=100"`
-	State      uint8  `form:"state" binding:"oneof=0 1"`
-	ModifiedBy string `form:"modifiedBy" binding:"required,min=2,max=100"`
+	ID         uint32 `form:"id" binding:"required,gte=1"`                                     // 标签 ID
+	Name       string `form:"name" binding:"max=100"`                                          // 名称;要修改的标签名称
+	State      uint8  `form:"state" binding:"oneof=0 1"`                                       // 状态；可以更新状态为不可用
+	ModifiedBy string `json:"modified_by" form:"modified_by" binding:"required,min=2,max=100"` // 修改人;以后从token中获取
 }
 
 type DeleteTagRequest struct {

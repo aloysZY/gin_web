@@ -54,3 +54,7 @@ func (t Tag) List(db *gorm.DB, pageOffset, pageSize int) ([]*Tag, error) {
 	}
 	return tags, nil
 }
+
+func (t Tag) Update(db *gorm.DB, values any) error {
+	return db.Model(&t).Where("id = ? AND is_del = ?", t.ID, 0).Update(values).Error
+}

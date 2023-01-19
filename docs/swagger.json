@@ -54,7 +54,7 @@
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/model.TageSwagger"
+                            "$ref": "#/definitions/app.SwaggersTage"
                         }
                     },
                     "400": {
@@ -87,7 +87,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/param.CreateTagRequest"
+                            "$ref": "#/definitions/params.CreateTagRequest"
                         }
                     }
                 ],
@@ -95,7 +95,7 @@
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/model.TageSwagger"
+                            "$ref": "#/definitions/app.SwaggersTage"
                         }
                     },
                     "400": {
@@ -132,6 +132,20 @@
                 }
             }
         },
+        "app.SwaggersTage": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Tag"
+                    }
+                },
+                "page": {
+                    "$ref": "#/definitions/app.Pager"
+                }
+            }
+        },
         "errcode.Error": {
             "type": "object"
         },
@@ -150,10 +164,6 @@
                     "description": "删除时间，自动获取提交时间",
                     "type": "integer"
                 },
-                "id": {
-                    "description": "主键",
-                    "type": "integer"
-                },
                 "is_del": {
                     "description": "是否删除 0为删除，1 已删除",
                     "type": "integer"
@@ -170,27 +180,13 @@
                     "description": "名称",
                     "type": "string"
                 },
-                "status": {
+                "state": {
                     "description": "状态",
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
-        "model.TageSwagger": {
-            "type": "object",
-            "properties": {
-                "list": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Tag"
-                    }
-                },
-                "page": {
-                    "$ref": "#/definitions/app.Pager"
-                }
-            }
-        },
-        "param.CreateTagRequest": {
+        "params.CreateTagRequest": {
             "type": "object",
             "required": [
                 "created_by",
@@ -210,7 +206,7 @@
                     "minLength": 2
                 },
                 "state": {
-                    "description": "创建状态；默认是 1",
+                    "description": "创建状态；默认是 1 状态 0为禁用、1为启用",
                     "type": "integer",
                     "enum": [
                         0,

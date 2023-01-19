@@ -32,21 +32,38 @@ func (svc *Service) CreateTag(param *params.CreateTagRequest) error {
 	err := svc.dao.CreateTag(param.Name, param.CreatedBy, param.State)
 	if err != nil {
 		zap.L().Error("svc.dao.CreateTag error: ", zap.Error(err))
+		return err
 	}
-	return err
+	return nil
 }
 
 func (svc *Service) CountTag(param *params.CountTagRequest) (int, error) {
-	return svc.dao.CountTag(param.Name, param.State)
+	count, err := svc.dao.CountTag(param.Name, param.State)
+	if err != nil {
+		zap.L().Error("svc.dao.CountTag error: ", zap.Error(err))
+		return 0, err
+	}
+	return count, nil
 }
 
 func (svc *Service) GetTagList(param *params.ListTagRequest, pager *app.Pager) ([]*model.Tag, error) {
-	return svc.dao.GetTagList(param.Name, param.State, pager.Page, pager.PageSize)
+	tagList, err := svc.dao.GetTagList(param.Name, param.State, pager.Page, pager.PageSize)
+	if err != nil {
+		zap.L().Error("svc.dao.GetTagList error: ", zap.Error(err))
+		return nil, err
+	}
+	return tagList, nil
 }
 
-// func (svc *Service) UpdateTag(param *param.UpdateTagRequest) error {
-// 	return svc.dao.UpdateTag(param.ID, param.Name, param.State, param.ModifiedBy)
-// }
+func (svc *Service) UpdateTag(param *params.UpdateTagRequest) error {
+	err := svc.dao.UpdateTag(param.ID, param.Name, param.State, param.ModifiedBy)
+	if err != nil {
+		zap.L().Error("svc.dao.UpdateTag error: ", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
 //
 // func (svc *Service) DeleteTag(param *param.DeleteTagRequest) error {
 // 	return svc.dao.DeleteTag(param.ID)

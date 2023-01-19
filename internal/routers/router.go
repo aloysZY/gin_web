@@ -2,8 +2,6 @@
 package routers
 
 import (
-	"net/http"
-
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/middleware"
 	v1 "github.com/aloysZy/gin_web/internal/routers/app/v1"
@@ -34,11 +32,11 @@ func NewRouter() *gin.Engine {
 	apiV1 := r.Group("/api/v1")
 	{
 		// 设计路由的时候，使用不同的方法进行不同的操作
-		apiV1.POST("/tags", tag.Create)            // 创建
-		apiV1.GET("/tags", tag.List)               // 获取
-		apiV1.DELETE("/tags/:id", tag.Delete)      // 删除
-		apiV1.PUT("/tags/:id", tag.Update)         // 全量更新
-		apiV1.PATCH("/tags/:id/state", tag.Update) // 更新部分
+		apiV1.POST("/tags", tag.Create)       // 创建
+		apiV1.GET("/tags", tag.List)          // 获取
+		apiV1.DELETE("/tags/:id", tag.Delete) // 删除
+		apiV1.PUT("/tags/:id", tag.Update)    // 全量更新
+		// apiV1.PATCH("/tags/:id/state", tag.Update) // 更新部分；这个就是改变标签是否可用和PUT重复了
 
 		apiV1.POST("/articles")            // 创建
 		apiV1.GET("/articles")             // 获取
@@ -48,10 +46,10 @@ func NewRouter() *gin.Engine {
 
 	}
 	// 没有路由匹配
-	r.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"msg": "404",
-		})
-	})
+	// r.NoRoute(func(c *gin.Context) {
+	// 	c.JSON(http.StatusOK, gin.H{
+	// 		"msg": "404",
+	// 	})
+	// })
 	return r
 }

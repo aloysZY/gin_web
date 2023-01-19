@@ -5,6 +5,7 @@ package v1
 import (
 	"github.com/aloysZy/gin_web/internal/service"
 	"github.com/aloysZy/gin_web/pkg/app"
+	"github.com/aloysZy/gin_web/pkg/convert"
 	"github.com/aloysZy/gin_web/pkg/errcode"
 	"github.com/aloysZy/gin_web/pkg/params"
 	"github.com/gin-gonic/gin"
@@ -74,7 +75,7 @@ func (t Tag) List(c *gin.Context) {
 		return
 	}
 	response.ToResponseList(tagList, totalRows)
-
+	return
 }
 
 // Create 新增标签
@@ -83,7 +84,7 @@ func (t Tag) List(c *gin.Context) {
 // @Tags 标签
 // @Produce  json
 // @Param object body params.CreateTagRequest true "创建标签"
-// @Success 200 {object} docs.TageSwagger "成功"
+// @Success 200 {object} app.SwaggersTage "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/tags [post]
@@ -103,9 +104,24 @@ func (t Tag) Create(c *gin.Context) {
 	}
 	// 返回请求
 	response.ToResponse(gin.H{})
+	return
 }
 
-func (t Tag) Update(c *gin.Context) {}
+func (t Tag) Update(c *gin.Context) {
+	response := app.NewResponse(c)
+	param := params.UpdateTagRequest{ID: convert.StrTo(c.Param("id")).MustUInt32()}
+	if valid, errs := app.BindAndValid(c, &param); !valid {
+		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
+		return
+	}
+	svc := service.New(c.Request.Context())
+	if err := svc.UpdateTag(&param); err != nil {
+		response.ToErrorResponse(errcode.ErrorUpdateTagFail)
+		return
+	}
+	response.ToResponse(gin.H{})
+	return
+}
 
 func (t Tag) Delete(c *gin.Context) {}
 
