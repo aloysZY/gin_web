@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	ut "github.com/go-playground/universal-translator"
 	val "github.com/go-playground/validator/v10"
+	"go.uber.org/zap"
 )
 
 type ValidError struct {
@@ -22,7 +23,7 @@ func (v *ValidError) Error() string {
 	return v.Message
 }
 
-func (v ValidErrors) Error() string {
+func (v ValidErrors) ErrorF() string {
 	return strings.Join(v.Errors(), ",")
 }
 
@@ -52,15 +53,16 @@ func BindAndValid(c *gin.Context, v interface{}) (bool, ValidErrors) {
 	// 注意：Shouldxxx和bindxxx区别就是bindxxx会在head中添加400的返回信息，而Shouldxxx不会
 	err := c.ShouldBind(v)
 	if err != nil {
-		// 取出翻译器
-		v := c.Value(global.Trans)
-		// 断言翻译器类型
-		trans, _ := v.(ut.Translator)
+		zap.L().Error("BindAndValid error: ", zap.Error(err))
 		// 判断是不是ValidationErrors错误类型
 		vErrs, ok := err.(val.ValidationErrors)
 		if !ok {
 			return false, errs
 		}
+		// 取出翻译器
+		v := c.Value(global.Trans)
+		// 断言翻译器类型
+		trans, _ := v.(ut.Translator)
 		// 否则进行翻译
 		for key, value := range vErrs.Translate(trans) {
 			errs = append(errs, &ValidError{

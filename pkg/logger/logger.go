@@ -2,22 +2,15 @@
 package logger
 
 import (
-	"net"
-	"net/http"
-	"net/http/httputil"
 	"os"
-	"runtime/debug"
-	"strings"
-	"time"
 
 	"github.com/aloysZy/gin_web/global"
-	"github.com/gin-gonic/gin"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-var lg *zap.Logger
+var Lg *zap.Logger
 
 const (
 	RELEASE = "release"
@@ -26,8 +19,7 @@ const (
 
 // NewLogger 初始化 logger
 func NewLogger() (err error) {
-	writeSyncer := getLogWriter()
-	encoder := getEncoder()
+	// 根据传入的日记级别进行记录
 	var l = new(zapcore.Level)
 	// 将配置文件的日志级别转化为zapcore.Level类型
 	// DEBUG：详细的信息,通常只出现在诊断问题上
@@ -63,26 +55,29 @@ func NewLogger() (err error) {
 	// 		zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), zapcore.DebugLevel),
 	// 	)
 	// }
+	// 根据 RunMode 选择输出位置
 	switch global.ServerSetting.RunMode {
-	case RELEASE:
+	// 生产和测试环境，输出到文件并且错误信息单独输出
+	case RELEASE, TEST:
+		encoder := getEncoder()
+		writeSyncer := getLogWriter()
 		writeSyncerError := getLogWriterError()
 		core = zapcore.NewTee(
 			zapcore.NewCore(encoder, writeSyncer, l),
 			// 错误日志单独输出
 			zapcore.NewCore(encoder, writeSyncerError, zap.ErrorLevel),
 		)
-	case TEST:
-		core = zapcore.NewCore(encoder, writeSyncer, l)
 	default:
 		// 初始化终端输出配置
 		consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
 		core = zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), zapcore.DebugLevel)
 	}
-	lg = zap.New(core, zap.AddCaller())
-	zap.ReplaceGlobals(lg)
+	Lg = zap.New(core, zap.AddCaller())
+	zap.ReplaceGlobals(Lg)
 	return
 }
 
+// 格式化输出编码
 func getEncoder() zapcore.Encoder {
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -95,9 +90,13 @@ func getEncoder() zapcore.Encoder {
 
 // 正常输出，按照配置文件要求
 func getLogWriter() zapcore.WriteSyncer {
-	fileName := global.AppSetting.LogSavePath + "/" + global.AppSetting.LogFileName + time.Now().Format("2006-01-02 15:04:05") + global.AppSetting.LogFileExt
+	// fileName := global.AppSetting.LogSavePath + "/" + global.AppSetting.LogFileName + time.Now().Format("2006-01-02 15:04:05") + global.AppSetting.LogFileExt
+	// 测试后发现不能添加时间，不然每次调用都新生成一个文件
+	// accessFileName := global.AppSetting.LogSavePath + "/access_" + global.AppSetting.LogFileName + "_" + time.Now().Format("2006-01-02 15:04:05") + global.AppSetting.LogFileExt
+	accessFileName := global.AppSetting.LogSavePath + "/" + global.AppSetting.LogFileName + "_" + global.AppSetting.LogFileExt
+
 	lumberJackLogger := &lumberjack.Logger{
-		Filename:   fileName,                     // 日志文件的位置
+		Filename:   accessFileName,               // 日志文件的位置
 		MaxSize:    global.AppSetting.MaxSize,    // 在进行切割之前，日志文件的最大大小（以MB为单位）
 		MaxBackups: global.AppSetting.MaxBackups, // 保留旧文件的最大个数
 		MaxAge:     global.AppSetting.MaxAge,     // 保留旧文件的最大天数，不管副本数量有多少，超过这个时间的日志都删除
@@ -109,9 +108,10 @@ func getLogWriter() zapcore.WriteSyncer {
 
 // 错误日志单独输出
 func getLogWriterError() zapcore.WriteSyncer {
-	fileName := global.AppSetting.LogSavePath + "/" + global.AppSetting.LogFileName + "Error" + time.Now().Format("2006-01-02 15:04:05") + global.AppSetting.LogFileExt
+	// fileName := global.AppSetting.LogSavePath + "/" + global.AppSetting.LogFileName + "Error" + time.Now().Format("2006-01-02 15:04:05") + global.AppSetting.LogFileExt
+	errorFileName := global.AppSetting.LogSavePath + "/error_" + global.AppSetting.LogFileName + "_" + global.AppSetting.LogFileExt
 	lumberJackLogger := &lumberjack.Logger{
-		Filename:   fileName,                     // 日志文件的位置
+		Filename:   errorFileName,                // 日志文件的位置
 		MaxSize:    global.AppSetting.MaxSize,    // 在进行切割之前，日志文件的最大大小（以MB为单位）
 		MaxBackups: global.AppSetting.MaxBackups, // 保留旧文件的最大个数
 		MaxAge:     global.AppSetting.MaxAge,     // 保留旧文件的最大天数，不管副本数量有多少，超过这个时间的日志都删除
@@ -119,73 +119,4 @@ func getLogWriterError() zapcore.WriteSyncer {
 		Compress:   global.AppSetting.Compress,   // Compress决定是否对存储的日志文件进行压缩，使用gzip默认情况下不执行压缩。
 	}
 	return zapcore.AddSync(lumberJackLogger)
-}
-
-// GinLogger 接收gin框架默认的日志
-func GinLogger() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		start := time.Now()
-		path := c.Request.URL.Path
-		query := c.Request.URL.RawQuery
-		c.Next()
-
-		cost := time.Since(start)
-		lg.Info(path,
-			zap.Int("status", c.Writer.Status()),
-			zap.String("method", c.Request.Method),
-			zap.String("path", path),
-			zap.String("query", query),
-			zap.String("ip", c.ClientIP()),
-			zap.String("user-agent", c.Request.UserAgent()),
-			zap.String("errors", c.Errors.ByType(gin.ErrorTypePrivate).String()),
-			zap.Duration("cost", cost),
-		)
-	}
-}
-
-// GinRecovery recover掉项目可能出现的panic，并使用zap记录相关日志 stack 布尔值来记录对战信息
-func GinRecovery(stack bool) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		defer func() {
-			if err := recover(); err != nil {
-				// Check for a broken connection, as it is not really a
-				// condition that warrants a panic stack trace.
-				var brokenPipe bool
-				if ne, ok := err.(*net.OpError); ok {
-					if se, ok := ne.Err.(*os.SyscallError); ok {
-						if strings.Contains(strings.ToLower(se.Error()), "broken pipe") || strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
-							brokenPipe = true
-						}
-					}
-				}
-
-				httpRequest, _ := httputil.DumpRequest(c.Request, false)
-				if brokenPipe {
-					lg.Error(c.Request.URL.Path,
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-					)
-					// If the connection is dead, we can't write a status to it.
-					c.Error(err.(error)) // nolint: errcheck
-					c.Abort()
-					return
-				}
-
-				if stack {
-					lg.Error("[Recovery from panic]",
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-						zap.String("stack", string(debug.Stack())),
-					)
-				} else {
-					lg.Error("[Recovery from panic]",
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-					)
-				}
-				c.AbortWithStatus(http.StatusInternalServerError)
-			}
-		}()
-		c.Next()
-	}
 }

@@ -4,9 +4,9 @@ package routers
 import (
 	"net/http"
 
+	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/middleware"
 	v1 "github.com/aloysZy/gin_web/internal/routers/app/v1"
-	"github.com/aloysZy/gin_web/pkg/logger"
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/aloysZy/gin_web/docs" // 千万不要忘了导入把你上一步生成的docs
@@ -16,10 +16,16 @@ import (
 )
 
 func NewRouter() *gin.Engine {
-	r := gin.Default() // default就初始化两个中间件了
-	// r := gin.New() // 使用自己的中间件
+	// 设置gin模式，要在初始化之前
+	gin.SetMode(global.ServerSetting.RunMode)
+	// r := gin.Default() // default就初始化两个中间件了
+	r := gin.New() // 使用自己的中间件
 	// 添加日志后设置中间件,添加翻译器中间件
-	r.Use(logger.GinLogger(), logger.GinRecovery(true), middleware.Translations())
+	if global.ServerSetting.RunMode == "release" {
+		r.Use(middleware.GinLogger(), middleware.GinRecovery(), middleware.Translations())
+	} else {
+		r.Use(middleware.GinLogger(), middleware.GinRecovery(), middleware.Translations(), gin.Logger())
+	}
 	// swagger 路由
 	r.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
 	// 初始化，以后 api 版本变更，直接更换初始化的方法就行了
@@ -29,7 +35,7 @@ func NewRouter() *gin.Engine {
 	{
 		// 设计路由的时候，使用不同的方法进行不同的操作
 		apiV1.POST("/tags", tag.Create)            // 创建
-		apiV1.GET("/tags", tag.Get)                // 获取
+		apiV1.GET("/tags", tag.List)               // 获取
 		apiV1.DELETE("/tags/:id", tag.Delete)      // 删除
 		apiV1.PUT("/tags/:id", tag.Update)         // 全量更新
 		apiV1.PATCH("/tags/:id/state", tag.Update) // 更新部分

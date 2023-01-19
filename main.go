@@ -79,6 +79,7 @@ func setupMysqlDBEngin() error {
 // @termsOfService https://github.com/aloysZY/gin_web
 func main() {
 	fmt.Printf("global.ServerSetting:%#v\nglobal.AppSeting:%#v\nglobal.DatabaseSetting.Mysql:%#v\n", global.ServerSetting, global.AppSetting, global.DatabaseSetting.Mysql)
+
 	router := routers.NewRouter()
 	// 不使用 run 启动，自定义配置服务参数
 	// https://blog.csdn.net/yanyuan_smartisan/article/details/113357813

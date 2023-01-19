@@ -1,21 +1,40 @@
 definitions:
+  app.Pager:
+    properties:
+      page:
+        description: 页码
+        type: integer
+      page_size:
+        description: 每页数量
+        type: integer
+      total_rows:
+        description: 总行数
+        type: integer
+    type: object
   errcode.Error:
     type: object
   model.Tag:
     properties:
       created_by:
+        description: 创建人
         type: string
       created_on:
+        description: 创建时间 ，自动获取提交时间
         type: integer
       deleted_on:
+        description: 删除时间，自动获取提交时间
         type: integer
       id:
+        description: 主键
         type: integer
       is_del:
+        description: 是否删除 0为删除，1 已删除
         type: integer
       modified_by:
+        description: 修改人
         type: string
       modified_on:
+        description: 修改时间，自动获取提交时间
         type: integer
       name:
         description: 名称
@@ -23,6 +42,38 @@ definitions:
       status:
         description: 状态
         type: string
+    type: object
+  model.TageSwagger:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/model.Tag'
+        type: array
+      page:
+        $ref: '#/definitions/app.Pager'
+    type: object
+  param.CreateTagRequest:
+    properties:
+      created_by:
+        description: 创建人；min 和 max 限制的是长度 2-100s
+        maxLength: 100
+        minLength: 2
+        type: string
+      name:
+        description: 名称；min 和 max 限制的是长度 2-100
+        maxLength: 100
+        minLength: 2
+        type: string
+      state:
+        description: 创建状态；默认是 1
+        enum:
+        - 0
+        - 1
+        example: 1
+        type: integer
+    required:
+    - created_by
+    - name
     type: object
 info:
   contact: {}
@@ -32,39 +83,64 @@ info:
   version: "1.0"
 paths:
   /api/v1/tags:
-    post:
+    get:
+      description: 获取多个标签
       parameters:
       - description: 标签名称
-        in: body
+        in: query
         maxLength: 100
-        minLength: 3
         name: name
-        required: true
-        schema:
-          type: string
+        type: string
       - default: 1
         description: 状态
         enum:
         - 0
         - 1
-        in: body
+        in: query
         name: state
-        schema:
-          type: integer
-      - description: 创建者
-        in: body
-        maxLength: 100
-        minLength: 3
-        name: created_by
-        schema:
-          type: string
+        type: integer
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/model.Tag'
+            $ref: '#/definitions/model.TageSwagger'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取多个标签
+      tags:
+      - 标签
+    post:
+      description: 添加标签接口
+      parameters:
+      - description: 创建标签
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/param.CreateTagRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.TageSwagger'
         "400":
           description: 请求错误
           schema:
@@ -74,4 +150,6 @@ paths:
           schema:
             $ref: '#/definitions/errcode.Error'
       summary: 新增标签
+      tags:
+      - 标签
 swagger: "2.0"

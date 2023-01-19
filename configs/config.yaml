@@ -1,7 +1,7 @@
 #服务配置
 Server:
   Name: gin_web
-  RunMode: debug  #控制日志输出位置
+  RunMode: debug  #控制日志输出位置和 gin 运行级别  设置 debug,test,release
   HttpPort: 8080
   ReadTimeout: 60
   WriteTimeout: 60

@@ -18,44 +18,85 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/api/v1/tags": {
-            "post": {
+            "get": {
+                "description": "获取多个标签",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "新增标签",
+                "tags": [
+                    "标签"
+                ],
+                "summary": "获取多个标签",
                 "parameters": [
                     {
                         "maxLength": 100,
-                        "minLength": 3,
+                        "type": "string",
                         "description": "标签名称",
                         "name": "name",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query"
                     },
                     {
                         "enum": [
                             0,
                             1
                         ],
+                        "type": "integer",
                         "default": 1,
                         "description": "状态",
                         "name": "state",
-                        "in": "body",
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "in": "query"
                     },
                     {
-                        "maxLength": 100,
-                        "minLength": 3,
-                        "description": "创建者",
-                        "name": "created_by",
-                        "in": "body",
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.TageSwagger"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "添加标签接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "标签"
+                ],
+                "summary": "新增标签",
+                "parameters": [
+                    {
+                        "description": "创建标签",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/param.CreateTagRequest"
                         }
                     }
                 ],
@@ -63,7 +104,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/model.Tag"
+                            "$ref": "#/definitions/model.TageSwagger"
                         }
                     },
                     "400": {
@@ -83,6 +124,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "app.Pager": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "description": "页码",
+                    "type": "integer"
+                },
+                "page_size": {
+                    "description": "每页数量",
+                    "type": "integer"
+                },
+                "total_rows": {
+                    "description": "总行数",
+                    "type": "integer"
+                }
+            }
+        },
         "errcode.Error": {
             "type": "object"
         },
@@ -90,24 +148,31 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "created_by": {
+                    "description": "创建人",
                     "type": "string"
                 },
                 "created_on": {
+                    "description": "创建时间 ，自动获取提交时间",
                     "type": "integer"
                 },
                 "deleted_on": {
+                    "description": "删除时间，自动获取提交时间",
                     "type": "integer"
                 },
                 "id": {
+                    "description": "主键",
                     "type": "integer"
                 },
                 "is_del": {
+                    "description": "是否删除 0为删除，1 已删除",
                     "type": "integer"
                 },
                 "modified_by": {
+                    "description": "修改人",
                     "type": "string"
                 },
                 "modified_on": {
+                    "description": "修改时间，自动获取提交时间",
                     "type": "integer"
                 },
                 "name": {
@@ -117,6 +182,50 @@ const docTemplate = `{
                 "status": {
                     "description": "状态",
                     "type": "string"
+                }
+            }
+        },
+        "model.TageSwagger": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Tag"
+                    }
+                },
+                "page": {
+                    "$ref": "#/definitions/app.Pager"
+                }
+            }
+        },
+        "param.CreateTagRequest": {
+            "type": "object",
+            "required": [
+                "created_by",
+                "name"
+            ],
+            "properties": {
+                "created_by": {
+                    "description": "创建人；min 和 max 限制的是长度 2-100s",
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                },
+                "name": {
+                    "description": "名称；min 和 max 限制的是长度 2-100",
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                },
+                "state": {
+                    "description": "创建状态；默认是 1",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ],
+                    "example": 1
                 }
             }
         }

@@ -8,7 +8,7 @@ import "time"
 // ServerSettingS 服务配置
 type ServerSettingS struct {
 	Name         string
-	RunMode      string
+	RunMode      string // 运行级别，有 dev,test 和release
 	HttpPort     string // 这里是字符串，因为后面和字符串组合了
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
@@ -17,7 +17,7 @@ type ServerSettingS struct {
 // AppSettingS 应用配置
 type AppSettingS struct {
 	// Model string  #和RunMode设置为一个级别吧
-	Level           string // 日志级别
+	Level           string // 日志级别 记录和显示的日志信息级别
 	LogSavePath     string
 	LogFileName     string
 	LogFileExt      string
