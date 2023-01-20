@@ -63,7 +63,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/app.SwaggersTage"
+                            "$ref": "#/definitions/app.SwaggerTage"
                         }
                     },
                     "400": {
@@ -104,7 +104,57 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/app.SwaggersTage"
+                            "$ref": "#/definitions/app.Swagger"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/tags/{id}": {
+            "put": {
+                "description": "更新标签接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "标签"
+                ],
+                "summary": "更新标签",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "标签ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "更新标签",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/params.UpdateTagRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.Swagger"
                         }
                     },
                     "400": {
@@ -141,7 +191,10 @@ const docTemplate = `{
                 }
             }
         },
-        "app.SwaggersTage": {
+        "app.Swagger": {
+            "type": "object"
+        },
+        "app.SwaggerTage": {
             "type": "object",
             "properties": {
                 "list": {
@@ -171,6 +224,10 @@ const docTemplate = `{
                 },
                 "deleted_on": {
                     "description": "删除时间，自动获取提交时间",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "主键,\"-\"反序列化的时候不返回这个ID，新建雪花算法创建 ID",
                     "type": "integer"
                 },
                 "is_del": {
@@ -203,7 +260,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "created_by": {
-                    "description": "创建人；min 和 max 限制的是长度 2-100s",
+                    "description": "创建人；以后从 token 中获取；min 和 max 限制的是长度 2-100s",
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
@@ -222,6 +279,33 @@ const docTemplate = `{
                         1
                     ],
                     "example": 1
+                }
+            }
+        },
+        "params.UpdateTagRequest": {
+            "type": "object",
+            "required": [
+                "modified_by"
+            ],
+            "properties": {
+                "modified_by": {
+                    "description": "修改人;以后从token中获取",
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
+                },
+                "name": {
+                    "description": "名称;要修改的标签名称",
+                    "type": "string",
+                    "maxLength": 100
+                },
+                "state": {
+                    "description": "状态；可以更新状态为不可用",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ]
                 }
             }
         }

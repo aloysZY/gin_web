@@ -7,6 +7,7 @@ import "time"
 
 // ServerSettingS 服务配置
 type ServerSettingS struct {
+	MachineId    uint16
 	Name         string
 	RunMode      string // 运行级别，有 dev,test 和release
 	HttpPort     string // 这里是字符串，因为后面和字符串组合了

@@ -28,8 +28,15 @@ func New(ctx context.Context) Service {
 
 // CreateTag 创建标签的具体逻辑函数
 func (svc *Service) CreateTag(param *params.CreateTagRequest) error {
+	// 创建tagId
+	id, err := app.GetID()
+	if err != nil {
+		zap.L().Error("CreateTag app.GetID error: ", zap.Error(err))
+		return err
+	}
+	param.TagId = id
 	// 业务逻辑操作，处理业务需要的数据和数据库需要的数据，调用 dao操作数据库
-	err := svc.dao.CreateTag(param.Name, param.CreatedBy, param.State)
+	err = svc.dao.CreateTag(param.TagId, param.Name, param.CreatedBy, param.State)
 	if err != nil {
 		zap.L().Error("svc.dao.CreateTag error: ", zap.Error(err))
 		return err
@@ -56,7 +63,7 @@ func (svc *Service) GetTagList(param *params.ListTagRequest, pager *app.Pager) (
 }
 
 func (svc *Service) UpdateTag(param *params.UpdateTagRequest) error {
-	err := svc.dao.UpdateTag(param.ID, param.Name, param.State, param.ModifiedBy)
+	err := svc.dao.UpdateTag(param.TagId, param.Name, param.State, param.ModifiedBy)
 	if err != nil {
 		zap.L().Error("svc.dao.UpdateTag error: ", zap.Error(err))
 		return err

@@ -5,8 +5,9 @@ import "github.com/jinzhu/gorm"
 
 // Tag TAG生成返回的数据
 type Tag struct {
-	State  uint8          `json:"state"` // 状态
-	Name   string         `json:"name"`  // 名称
+	State  uint8          `json:"state"`  // 状态
+	TagID  uint64         `json:"tag_id"` // 设置 tagID
+	Name   string         `json:"name"`   // 名称
 	*Model `json:"model"` // 公共字段
 	// json:"model" 本身是结构体嵌套，不写返回数据和 name 是在一层，写了之后，在一个新层里展示
 }
@@ -56,5 +57,5 @@ func (t Tag) List(db *gorm.DB, pageOffset, pageSize int) ([]*Tag, error) {
 }
 
 func (t Tag) Update(db *gorm.DB, values any) error {
-	return db.Model(&t).Where("id = ? AND is_del = ?", t.ID, 0).Update(values).Error
+	return db.Model(&t).Where("tag_id = ? AND is_del = ?", t.TagID, 0).Update(values).Error
 }

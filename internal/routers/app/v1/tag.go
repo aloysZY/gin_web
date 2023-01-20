@@ -1,11 +1,11 @@
-// Package v1 对于的相关请求
-// 具体的业务逻辑
+// Package v1 对于的相关请求 请求参数处理
 package v1
 
 import (
+	"strconv"
+
 	"github.com/aloysZy/gin_web/internal/service"
 	"github.com/aloysZy/gin_web/pkg/app"
-	"github.com/aloysZy/gin_web/pkg/convert"
 	"github.com/aloysZy/gin_web/pkg/errcode"
 	"github.com/aloysZy/gin_web/pkg/params"
 	"github.com/gin-gonic/gin"
@@ -41,7 +41,7 @@ func NewTag() Tag { return Tag{} }
 // @Param state query int false "状态" Enums(0, 1) default(1)
 // @Param page query int false "页码"
 // @Param page_size query int false "每页数量"
-// @Success 200 {object} app.SwaggersTage "成功"
+// @Success 200 {object} app.SwaggerTage "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/tags [get]
@@ -84,7 +84,7 @@ func (t Tag) List(c *gin.Context) {
 // @Tags 标签
 // @Produce  json
 // @Param object body params.CreateTagRequest true "创建标签"
-// @Success 200 {object} app.SwaggersTage "成功"
+// @Success 200 {object} app.Swagger "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/tags [post]
@@ -97,6 +97,7 @@ func (t Tag) Create(c *gin.Context) {
 		return
 	}
 	// 2.处理业务逻辑 ,c.Request.Context() 请求行下文传入
+	// 创建 tagID
 	svc := service.New(c.Request.Context())
 	if err := svc.CreateTag(&param); err != nil {
 		response.ToErrorResponse(errcode.ErrorCreateTagFail)
@@ -107,9 +108,26 @@ func (t Tag) Create(c *gin.Context) {
 	return
 }
 
+// Update 更新标签
+// @Summary 更新标签
+// @Description 更新标签接口
+// @Tags 标签
+// @Produce  json
+// @Param id path uint8 true "标签ID"
+// @Param object body params.UpdateTagRequest true "更新标签"
+// @Success 200 {object} app.Swagger "成功"
+// @Failure 400 {object} errcode.Error "请求错误"
+// @Failure 500 {object} errcode.Error "内部错误"
+// @Router /api/v1/tags/{id} [put]
 func (t Tag) Update(c *gin.Context) {
 	response := app.NewResponse(c)
-	param := params.UpdateTagRequest{ID: convert.StrTo(c.Param("id")).MustUInt32()}
+	idStr := c.Param("id")
+	parseInt64, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		response.ToErrorResponse(errcode.InvalidParams)
+		return
+	}
+	param := params.UpdateTagRequest{TagId: uint64(parseInt64)}
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return

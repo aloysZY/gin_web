@@ -11,7 +11,9 @@ definitions:
         description: 总行数
         type: integer
     type: object
-  app.SwaggersTage:
+  app.Swagger:
+    type: object
+  app.SwaggerTage:
     properties:
       list:
         items:
@@ -33,6 +35,9 @@ definitions:
       deleted_on:
         description: 删除时间，自动获取提交时间
         type: integer
+      id:
+        description: 主键,"-"反序列化的时候不返回这个ID，新建雪花算法创建 ID
+        type: integer
       is_del:
         description: 是否删除 0为删除，1 已删除
         type: integer
@@ -52,7 +57,7 @@ definitions:
   params.CreateTagRequest:
     properties:
       created_by:
-        description: 创建人；min 和 max 限制的是长度 2-100s
+        description: 创建人；以后从 token 中获取；min 和 max 限制的是长度 2-100s
         maxLength: 100
         minLength: 2
         type: string
@@ -71,6 +76,26 @@ definitions:
     required:
     - created_by
     - name
+    type: object
+  params.UpdateTagRequest:
+    properties:
+      modified_by:
+        description: 修改人;以后从token中获取
+        maxLength: 100
+        minLength: 2
+        type: string
+      name:
+        description: 名称;要修改的标签名称
+        maxLength: 100
+        type: string
+      state:
+        description: 状态；可以更新状态为不可用
+        enum:
+        - 0
+        - 1
+        type: integer
+    required:
+    - modified_by
     type: object
 info:
   contact: {}
@@ -110,7 +135,7 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/app.SwaggersTage'
+            $ref: '#/definitions/app.SwaggerTage'
         "400":
           description: 请求错误
           schema:
@@ -137,7 +162,7 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/app.SwaggersTage'
+            $ref: '#/definitions/app.Swagger'
         "400":
           description: 请求错误
           schema:
@@ -147,6 +172,39 @@ paths:
           schema:
             $ref: '#/definitions/errcode.Error'
       summary: 新增标签
+      tags:
+      - 标签
+  /api/v1/tags/{id}:
+    put:
+      description: 更新标签接口
+      parameters:
+      - description: 标签ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 更新标签
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/params.UpdateTagRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.Swagger'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 更新标签
       tags:
       - 标签
 swagger: "2.0"
