@@ -35,11 +35,8 @@ definitions:
       deleted_on:
         description: 删除时间，自动获取提交时间
         type: integer
-      id:
-        description: 主键,"-"反序列化的时候不返回这个ID，新建雪花算法创建 ID
-        type: integer
       is_del:
-        description: 是否删除 0为删除，1 已删除
+        description: 是否删除 0 正常,1为删除，默认初始化 0
         type: integer
       modified_by:
         description: 修改人
@@ -51,8 +48,12 @@ definitions:
         description: 名称
         type: string
       state:
-        description: 状态
+        description: 状态  1 正常 0为禁用
         type: integer
+      tag_id:
+        description: 设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真
+        example: "0"
+        type: string
     type: object
   params.CreateTagRequest:
     properties:
@@ -67,7 +68,7 @@ definitions:
         minLength: 2
         type: string
       state:
-        description: 创建状态；默认是 1 状态 0为禁用、1为启用
+        description: 创建状态；默认是 1 正常 0为禁用、1为启用
         enum:
         - 0
         - 1
@@ -93,6 +94,7 @@ definitions:
         enum:
         - 0
         - 1
+        example: 1
         type: integer
     required:
     - modified_by
@@ -182,7 +184,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: 更新标签
         in: body
         name: object

@@ -13,5 +13,5 @@ type Model struct {
 	DeletedOn  uint32 `json:"deleted_on"`           // 删除时间，自动获取提交时间
 	CreatedBy  string `json:"created_by"`           // 创建人
 	ModifiedBy string `json:"modified_by"`          // 修改人
-	IsDel      uint8  `json:"is_del"`               // 是否删除 0为删除，1 已删除
+	IsDel      uint8  `json:"is_del"`               // 是否删除 0 正常,1为删除，默认初始化 0
 }

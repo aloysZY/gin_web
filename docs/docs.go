@@ -134,7 +134,7 @@ const docTemplate = `{
                 "summary": "更新标签",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "标签ID",
                         "name": "id",
                         "in": "path",
@@ -226,12 +226,8 @@ const docTemplate = `{
                     "description": "删除时间，自动获取提交时间",
                     "type": "integer"
                 },
-                "id": {
-                    "description": "主键,\"-\"反序列化的时候不返回这个ID，新建雪花算法创建 ID",
-                    "type": "integer"
-                },
                 "is_del": {
-                    "description": "是否删除 0为删除，1 已删除",
+                    "description": "是否删除 0 正常,1为删除，默认初始化 0",
                     "type": "integer"
                 },
                 "modified_by": {
@@ -247,8 +243,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "state": {
-                    "description": "状态",
+                    "description": "状态  1 正常 0为禁用",
                     "type": "integer"
+                },
+                "tag_id": {
+                    "description": "设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真",
+                    "type": "string",
+                    "example": "0"
                 }
             }
         },
@@ -272,7 +273,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "state": {
-                    "description": "创建状态；默认是 1 状态 0为禁用、1为启用",
+                    "description": "创建状态；默认是 1 正常 0为禁用、1为启用",
                     "type": "integer",
                     "enum": [
                         0,
@@ -305,7 +306,8 @@ const docTemplate = `{
                     "enum": [
                         0,
                         1
-                    ]
+                    ],
+                    "example": 1
                 }
             }
         }

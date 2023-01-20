@@ -5,7 +5,8 @@ Server:
   HttpPort: 8080
   ReadTimeout: 60
   WriteTimeout: 60
-  MachineId : 1  #雪花算法机器数量，还没搞太明白
+  MachineId: 1  #雪花算法机器数量，还没搞太明白
+  StartTime: "2023-1-19"   #这里要写成字符串，不然解析为时间类型了
 #  应用配置
 App:
 #  Model: dev

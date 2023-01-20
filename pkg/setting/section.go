@@ -11,6 +11,7 @@ type ServerSettingS struct {
 	Name         string
 	RunMode      string // 运行级别，有 dev,test 和release
 	HttpPort     string // 这里是字符串，因为后面和字符串组合了
+	StartTime    string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 }

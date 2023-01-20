@@ -80,7 +80,7 @@ func setupMysqlDBEngin() error {
 
 // setupSonyFlake 雪花算法初始化
 func setupSonyFlake() error {
-	if err := app.NewSonyFlake(global.ServerSetting.MachineId); err != nil {
+	if err := app.NewSonyFlake(global.ServerSetting.MachineId, global.ServerSetting.StartTime); err != nil {
 		return err
 	}
 	return nil

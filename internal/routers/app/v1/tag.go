@@ -113,7 +113,7 @@ func (t Tag) Create(c *gin.Context) {
 // @Description 更新标签接口
 // @Tags 标签
 // @Produce  json
-// @Param id path uint8 true "标签ID"
+// @Param id path sting true "标签ID"
 // @Param object body params.UpdateTagRequest true "更新标签"
 // @Success 200 {object} app.Swagger "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
@@ -122,12 +122,12 @@ func (t Tag) Create(c *gin.Context) {
 func (t Tag) Update(c *gin.Context) {
 	response := app.NewResponse(c)
 	idStr := c.Param("id")
-	parseInt64, err := strconv.ParseInt(idStr, 10, 64)
+	parseUInt64, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
 		response.ToErrorResponse(errcode.InvalidParams)
 		return
 	}
-	param := params.UpdateTagRequest{TagId: uint64(parseInt64)}
+	param := params.UpdateTagRequest{TagId: parseUInt64}
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
