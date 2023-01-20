@@ -8,8 +8,9 @@ import (
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/dao"
 	"github.com/aloysZy/gin_web/internal/model"
+	"github.com/aloysZy/gin_web/internal/routers/app/v1/params"
 	"github.com/aloysZy/gin_web/pkg/app"
-	"github.com/aloysZy/gin_web/pkg/params"
+
 	"go.uber.org/zap"
 )
 

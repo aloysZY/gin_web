@@ -1,7 +1,9 @@
 // Package model 操作是数据库
 package model
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+)
 
 // Tag TAG生成返回的数据
 type Tag struct {
@@ -18,10 +20,10 @@ type Tag struct {
 func (t Tag) TableName() string { return "web_tag" }
 
 // Create 操作数据库进行创建标签
-// 这里方法使用的是指针，因为要修改tag信息
 func (t Tag) Create(db *gorm.DB) error {
 	// 这里使用的是方法，&t 就可以获取到调用的tag数据，数据在 dao 已经初始化了
 	// &t传入地址是在结构体字段多的时候降低内存开销
+	// 这里还有一个问题，要判断标签是否存在，存在，禁用状态不能创建，存在，删除状态可以创建？在上层做判断
 	return db.Create(&t).Error
 }
 
@@ -40,9 +42,7 @@ func (t Tag) Count(db *gorm.DB) (int, error) {
 
 // List 查找符合条件标签列表
 // 稍后设置为默认按照时间反序排列
-func (t Tag) List(db *gorm.DB, pageOffset, pageSize int) ([]*Tag, error) {
-	var err error
-	var tags []*Tag
+func (t Tag) List(db *gorm.DB, pageOffset, pageSize int) (tags []*Tag, err error) {
 	if pageOffset >= 0 && pageSize > 0 {
 		db = db.Offset(pageOffset).Limit(pageSize)
 	}
@@ -57,5 +57,11 @@ func (t Tag) List(db *gorm.DB, pageOffset, pageSize int) ([]*Tag, error) {
 }
 
 func (t Tag) Update(db *gorm.DB, values any) error {
+	// 当修改的时候，数据库没有对于的数据tag_id，就会返回修改 0 行，但是没有错误，应该要提示数据不存在的，其实无所谓，应为是前端传入的 id，恶意修改数据库本身不存在，也不会修改
+	// db = db.Model(&t).Where("tag_id = ? AND is_del = ?", t.TagID, 0).Update(values)
+	// if db.RowsAffected == 0 {
+	// 	err := errors.New("为进行数据修改")
+	// 	return err
+	// }
 	return db.Model(&t).Where("tag_id = ? AND is_del = ?", t.TagID, 0).Update(values).Error
 }

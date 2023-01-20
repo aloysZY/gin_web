@@ -4,10 +4,10 @@ package v1
 import (
 	"strconv"
 
+	"github.com/aloysZy/gin_web/internal/routers/app/v1/params"
 	"github.com/aloysZy/gin_web/internal/service"
 	"github.com/aloysZy/gin_web/pkg/app"
 	"github.com/aloysZy/gin_web/pkg/errcode"
-	"github.com/aloysZy/gin_web/pkg/params"
 	"github.com/gin-gonic/gin"
 )
 
@@ -48,7 +48,9 @@ func NewTag() Tag { return Tag{} }
 func (t Tag) List(c *gin.Context) {
 	response := app.NewResponse(c)
 	// 1.解析参数
-	param := params.ListTagRequest{}
+	// params.ListTagRequest{} 有一个问题，初始化后，没传入state参数，解析后 state 是 1，有问题
+	param := params.ListTagRequest{} // state 怎么解析后就是 1 了？
+	// param := params.ListTagRequest{State: 1}
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
@@ -91,7 +93,9 @@ func (t Tag) List(c *gin.Context) {
 func (t Tag) Create(c *gin.Context) {
 	response := app.NewResponse(c)
 	// 1. 解析参数
-	param := params.CreateTagRequest{State: 1}
+	// params.CreateTagRequest{} 也有一个问题，没传入 state，解析后 state 是 0，这是正常的
+	param := params.CreateTagRequest{}
+	// param := params.CreateTagRequest{State: 1}
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
@@ -113,7 +117,7 @@ func (t Tag) Create(c *gin.Context) {
 // @Description 更新标签接口
 // @Tags 标签
 // @Produce  json
-// @Param id path sting true "标签ID"
+// @Param id path uint64 true "标签ID"
 // @Param object body params.UpdateTagRequest true "更新标签"
 // @Success 200 {object} app.Swagger "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
@@ -127,6 +131,7 @@ func (t Tag) Update(c *gin.Context) {
 		response.ToErrorResponse(errcode.InvalidParams)
 		return
 	}
+	// 如果现在是启用状态1，我这样初始化后，更新的是标签的名称数据库修改了，就变成 0 了，？存在问题
 	param := params.UpdateTagRequest{TagId: parseUInt64}
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
@@ -142,5 +147,3 @@ func (t Tag) Update(c *gin.Context) {
 }
 
 func (t Tag) Delete(c *gin.Context) {}
-
-// 这层应该做的是返回数据到前端的，基本不做业务处理

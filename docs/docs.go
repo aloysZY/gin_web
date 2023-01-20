@@ -134,7 +134,7 @@ const docTemplate = `{
                 "summary": "更新标签",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "标签ID",
                         "name": "id",
                         "in": "path",
@@ -290,7 +290,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "modified_by": {
-                    "description": "修改人;以后从token中获取",
+                    "description": "State      uint8  ` + "`" + `form:\"state\" binding:\"required,gte=0,lte=1\" example:\"1\"` + "`" + `                // 状态；可以更新状态为不可用，需要传入",
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
@@ -301,7 +301,7 @@ const docTemplate = `{
                     "maxLength": 100
                 },
                 "state": {
-                    "description": "状态；可以更新状态为不可用",
+                    "description": "状态；可以更新状态为不可用，需要传入",
                     "type": "integer",
                     "enum": [
                         0,

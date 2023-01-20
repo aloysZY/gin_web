@@ -1,4 +1,4 @@
-// Package dao 组合数据模型，调用数据库方法
+// Package dao 组合数据模型，调用数据库方法，处理数据库返回的错误
 package dao
 
 import (

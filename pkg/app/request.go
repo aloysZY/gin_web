@@ -36,7 +36,7 @@ func (v ValidErrors) Errors() []string {
 }
 
 // BindAndValid 封装后，进行解析入参，调用此函数,没有错误，返回 true 和 nil，否则返回 false,和错误
-func BindAndValid(c *gin.Context, v interface{}) (bool, ValidErrors) {
+func BindAndValid(c *gin.Context, v any) (bool, ValidErrors) {
 	var errs ValidErrors
 	// 内部根据Content-Type去解析
 	//	c.Bind(obj interface{})

@@ -81,7 +81,8 @@ definitions:
   params.UpdateTagRequest:
     properties:
       modified_by:
-        description: 修改人;以后从token中获取
+        description: State      uint8  `form:"state" binding:"required,gte=0,lte=1"
+          example:"1"`                // 状态；可以更新状态为不可用，需要传入
         maxLength: 100
         minLength: 2
         type: string
@@ -90,7 +91,7 @@ definitions:
         maxLength: 100
         type: string
       state:
-        description: 状态；可以更新状态为不可用
+        description: 状态；可以更新状态为不可用，需要传入
         enum:
         - 0
         - 1
@@ -184,7 +185,7 @@ paths:
         in: path
         name: id
         required: true
-        type: string
+        type: integer
       - description: 更新标签
         in: body
         name: object
