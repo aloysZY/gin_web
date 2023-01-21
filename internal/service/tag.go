@@ -72,7 +72,6 @@ func (svc *Service) UpdateTag(param *params.UpdateTagRequest) error {
 	return nil
 }
 
-//
-// func (svc *Service) DeleteTag(param *param.DeleteTagRequest) error {
-// 	return svc.dao.DeleteTag(param.ID)
-// }
+func (svc *Service) DeleteTag(param *params.DeleteTagRequest) error {
+	return svc.dao.DeleteTag(param.TagId)
+}

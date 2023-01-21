@@ -46,7 +46,8 @@ func (d *Dao) GetTagList(name string, state uint8, page, pageSize int) ([]*model
 	return listTag, nil
 }
 
-// UpdateTag 更新标签
+// UpdateTag 更新标签状态，如果名称存在一并更新
+// 默认更新标签为不可用状态
 func (d *Dao) UpdateTag(id uint64, name string, state uint8, modifiedBy string) error {
 	// 这里面传给 model 执行应该是数据处理好的
 	// tag := model.Tag{
@@ -65,4 +66,9 @@ func (d *Dao) UpdateTag(id uint64, name string, state uint8, modifiedBy string) 
 		value["name"] = name
 	}
 	return tag.Update(d.engine, value)
+}
+
+func (d *Dao) DeleteTag(id uint64) error {
+	tag := model.Tag{TagID: id}
+	return tag.Delete(d.engine)
 }

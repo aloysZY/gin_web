@@ -65,3 +65,7 @@ func (t Tag) Update(db *gorm.DB, values any) error {
 	// }
 	return db.Model(&t).Where("tag_id = ? AND is_del = ?", t.TagID, 0).Update(values).Error
 }
+
+func (t Tag) Delete(db *gorm.DB) error {
+	return db.Where("tag_id = ? AND is_del = ?", t.TagID, 0).Delete(&t).Error
+}

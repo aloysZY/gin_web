@@ -49,8 +49,9 @@ func (t Tag) List(c *gin.Context) {
 	response := app.NewResponse(c)
 	// 1.解析参数
 	// params.ListTagRequest{} 有一个问题，初始化后，没传入state参数，解析后 state 是 1，有问题
-	param := params.ListTagRequest{} // state 怎么解析后就是 1 了？
-	// param := params.ListTagRequest{State: 1}
+	// param := params.ListTagRequest{} // state 怎么解析后就是 1 了？
+	// 显示赋值吧，还没找到原因
+	param := params.ListTagRequest{State: 1}
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
@@ -94,8 +95,7 @@ func (t Tag) Create(c *gin.Context) {
 	response := app.NewResponse(c)
 	// 1. 解析参数
 	// params.CreateTagRequest{} 也有一个问题，没传入 state，解析后 state 是 0，这是正常的
-	param := params.CreateTagRequest{}
-	// param := params.CreateTagRequest{State: 1}
+	param := params.CreateTagRequest{State: 1}
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
@@ -132,7 +132,8 @@ func (t Tag) Update(c *gin.Context) {
 		return
 	}
 	// 如果现在是启用状态1，我这样初始化后，更新的是标签的名称数据库修改了，就变成 0 了，？存在问题
-	param := params.UpdateTagRequest{TagId: parseUInt64}
+	// 初始化赋值，默认为修改名称
+	param := params.UpdateTagRequest{TagId: parseUInt64, State: 1}
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
@@ -146,4 +147,34 @@ func (t Tag) Update(c *gin.Context) {
 	return
 }
 
-func (t Tag) Delete(c *gin.Context) {}
+// Delete 删除标签
+// @Summary 删除标签
+// @Description 删除标签
+// @Tags 标签
+// @Produce  json
+// @Param id path uint64 true "标签ID"
+// @Success 200 {object} app.SwaggerTage "成功"
+// @Failure 400 {object} errcode.Error "请求错误"
+// @Failure 500 {object} errcode.Error "内部错误"
+func (t Tag) Delete(c *gin.Context) {
+	response := app.NewResponse(c)
+	idStr := c.Param("id")
+	parseUInt64, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		response.ToErrorResponse(errcode.InvalidParams)
+		return
+	}
+	param := params.DeleteTagRequest{TagId: parseUInt64}
+	if valid, errs := app.BindAndValid(c, &param); !valid {
+		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
+		return
+	}
+	svc := service.New(c.Request.Context())
+	err = svc.DeleteTag(&param)
+	if err != nil {
+		response.ToErrorResponse(errcode.ErrorDeleteTagFail)
+		return
+	}
+	response.ToResponse(gin.H{})
+	return
+}

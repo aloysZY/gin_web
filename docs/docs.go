@@ -256,7 +256,6 @@ const docTemplate = `{
         "params.CreateTagRequest": {
             "type": "object",
             "required": [
-                "created_by",
                 "name"
             ],
             "properties": {
@@ -273,7 +272,7 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "state": {
-                    "description": "创建状态；默认是 1 正常 0为禁用、1为启用",
+                    "description": "from是将传入的参数和结构体进行绑定，但是名称中有\"_\"的时候存在问题，可以设置json来解决\nhttps://juejin.cn/post/7005465902804123679\nexample:\"1\"  swagger tag 设置默认值",
                     "type": "integer",
                     "enum": [
                         0,
@@ -285,12 +284,9 @@ const docTemplate = `{
         },
         "params.UpdateTagRequest": {
             "type": "object",
-            "required": [
-                "modified_by"
-            ],
             "properties": {
                 "modified_by": {
-                    "description": "State      uint8  ` + "`" + `form:\"state\" binding:\"required,gte=0,lte=1\" example:\"1\"` + "`" + `                // 状态；可以更新状态为不可用，需要传入",
+                    "description": "修改人;以后从token中获取",
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
