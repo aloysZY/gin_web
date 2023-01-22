@@ -78,6 +78,7 @@ func (t Tag) List(c *gin.Context) {
 		response.ToErrorResponse(errcode.ErrorGetTagListFail)
 		return
 	}
+	// panic("failed to get tag list test email")
 	response.ToResponseList(tagList, totalRows)
 	return
 }

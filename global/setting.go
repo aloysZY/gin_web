@@ -2,6 +2,7 @@
 package global
 
 import (
+	"github.com/aloysZy/gin_web/pkg/email"
 	"github.com/aloysZy/gin_web/pkg/setting"
 	"github.com/jinzhu/gorm"
 )
@@ -14,6 +15,7 @@ var (
 	MysqlDBEngine   *gorm.DB
 	JWTSetting      *setting.JWTSettingS
 	EmailSetting    *setting.EmailSettingS
+	EmailEngine     *email.Email
 )
 
 // Trans 上下文用到的常量

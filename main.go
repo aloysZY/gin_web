@@ -13,6 +13,7 @@ import (
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/model"
 	"github.com/aloysZy/gin_web/internal/routers"
+	"github.com/aloysZy/gin_web/pkg/email"
 	"github.com/aloysZy/gin_web/pkg/logger"
 	"github.com/aloysZy/gin_web/pkg/setting"
 )
@@ -34,7 +35,8 @@ func init() {
 	if err := setupMysqlDBEngin(); err != nil {
 		log.Fatalf("init.setupMysqlDBEngin err:%v", err)
 	}
-
+	// 初始化邮件
+	setupEmail()
 }
 
 // setupSetting初始化配置文件
@@ -91,6 +93,12 @@ func setupSonyFlake() error {
 		return err
 	}
 	return nil
+}
+
+// setupEmail 初始化邮件
+func setupEmail() {
+	global.EmailEngine = email.NewEmail(global.EmailSetting)
+	return
 }
 
 // @title gin_web

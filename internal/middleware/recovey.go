@@ -11,22 +11,13 @@ import (
 	"time"
 
 	"github.com/aloysZy/gin_web/global"
-	"github.com/aloysZy/gin_web/pkg/email"
 	"github.com/aloysZy/gin_web/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
-// GinRecovery recover掉项目可能出现的panic, stack 布尔值来记录堆栈信息
+// GinRecovery recover掉项目可能出现的, stack 布尔值来记录堆栈信息
 func GinRecovery() gin.HandlerFunc {
-	defailtMailer := email.NewEmail(&email.SMTPInfo{
-		Host:     global.EmailSetting.Host,
-		Port:     global.EmailSetting.Port,
-		IsSSL:    global.EmailSetting.IsSSL,
-		UserName: global.EmailSetting.UserName,
-		Password: global.EmailSetting.Password,
-		From:     global.EmailSetting.From,
-	})
 	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
@@ -57,7 +48,7 @@ func GinRecovery() gin.HandlerFunc {
 					zap.String("request", string(httpRequest)),
 					zap.String("stack", string(debug.Stack())))
 				// 发送邮件
-				err := defailtMailer.SendMail(
+				err := global.EmailEngine.SendMail(
 					global.EmailSetting.To,
 					fmt.Sprintf("异常抛出，发生时间: %d", time.Now().Unix()),
 					fmt.Sprintf("错误信息: %v", err),

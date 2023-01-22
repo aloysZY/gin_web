@@ -30,12 +30,12 @@ JWT:
 Email:
   Host: smtp.qq.com
   Port: 465
-  UserName: XXXXXX@qq.com
-  Password: XXXXXXX
+  UserName: 852979908@qq.com
+  Password: apaaweounxozbfff
   IsSSL: true
-  From: XXXXXX@qq.com
+  From: 852979908@qq.com
   To:
-    - XXXX@qq.com
+    - 852979908@qq.com
 #数据库配置
 Database:
   mysql:

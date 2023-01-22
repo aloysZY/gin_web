@@ -3,6 +3,7 @@ package email
 import (
 	"crypto/tls"
 
+	"github.com/aloysZy/gin_web/pkg/setting"
 	"gopkg.in/gomail.v2"
 )
 
@@ -19,8 +20,17 @@ type SMTPInfo struct {
 	From     string
 }
 
-func NewEmail(info *SMTPInfo) *Email {
-	return &Email{SMTPInfo: info}
+func NewEmail(email *setting.EmailSettingS) *Email {
+	return &Email{
+		SMTPInfo: &SMTPInfo{
+			Host:     email.Host,
+			Port:     email.Port,
+			IsSSL:    email.IsSSL,
+			UserName: email.UserName,
+			Password: email.Password,
+			From:     email.From,
+		},
+	}
 }
 
 func (e *Email) SendMail(to []string, subject, body string) error {
