@@ -13,6 +13,8 @@ definitions:
     type: object
   app.Swagger:
     type: object
+  app.SwaggerAuth:
+    type: object
   app.SwaggerTage:
     properties:
       list:
@@ -55,38 +57,32 @@ definitions:
         example: "0"
         type: string
     type: object
+  params.AuthRequest:
+    properties:
+      app_key:
+        maxLength: 20
+        minLength: 5
+        type: string
+      app_secret:
+        maxLength: 20
+        minLength: 5
+        type: string
+    required:
+    - app_key
+    - app_secret
+    type: object
   params.CreateTagRequest:
     properties:
-      created_by:
-        description: 创建人；以后从 token 中获取；min 和 max 限制的是长度 2-100s
-        maxLength: 100
-        minLength: 2
-        type: string
       name:
         description: 名称；min 和 max 限制的是长度 2-100
         maxLength: 100
         minLength: 2
         type: string
-      state:
-        description: |-
-          from是将传入的参数和结构体进行绑定，但是名称中有"_"的时候存在问题，可以设置json来解决
-          https://juejin.cn/post/7005465902804123679
-          example:"1"  swagger tag 设置默认值
-        enum:
-        - 0
-        - 1
-        example: 1
-        type: integer
     required:
     - name
     type: object
   params.UpdateTagRequest:
     properties:
-      modified_by:
-        description: 修改人;以后从token中获取
-        maxLength: 100
-        minLength: 2
-        type: string
       name:
         description: 名称;要修改的标签名称
         maxLength: 100
@@ -108,7 +104,7 @@ info:
 paths:
   /api/v1/tags:
     get:
-      description: 获取多个标签
+      description: 查询标签
       parameters:
       - description: 标签名称
         in: query
@@ -146,7 +142,9 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/errcode.Error'
-      summary: 获取多个标签
+      security:
+      - ApiKeyAuth: []
+      summary: 查询标签
       tags:
       - 标签
     post:
@@ -173,10 +171,40 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/errcode.Error'
-      summary: 新增标签
+      security:
+      - ApiKeyAuth: []
+      summary: 添加标签
       tags:
       - 标签
   /api/v1/tags/{id}:
+    delete:
+      description: 删除标签
+      parameters:
+      - description: 标签ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.Swagger'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除标签
+      tags:
+      - 标签
     put:
       description: 更新标签接口
       parameters:
@@ -206,7 +234,70 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/errcode.Error'
+      security:
+      - ApiKeyAuth: []
       summary: 更新标签
       tags:
       - 标签
+  /auth:
+    post:
+      description: 登录接口
+      parameters:
+      - description: 用户登录
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/params.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.SwaggerAuth'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 登录
+      tags:
+      - 用户
+  /signup:
+    post:
+      description: 注册接口
+      parameters:
+      - description: 注册用户
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/params.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.Swagger'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 注册
+      tags:
+      - 用户
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

@@ -19,14 +19,19 @@ const docTemplate = `{
     "paths": {
         "/api/v1/tags": {
             "get": {
-                "description": "获取多个标签",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "查询标签",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "标签"
                 ],
-                "summary": "获取多个标签",
+                "summary": "查询标签",
                 "parameters": [
                     {
                         "maxLength": 100,
@@ -81,6 +86,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "添加标签接口",
                 "produces": [
                     "application/json"
@@ -88,7 +98,7 @@ const docTemplate = `{
                 "tags": [
                     "标签"
                 ],
-                "summary": "新增标签",
+                "summary": "添加标签",
                 "parameters": [
                     {
                         "description": "创建标签",
@@ -124,6 +134,11 @@ const docTemplate = `{
         },
         "/api/v1/tags/{id}": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "更新标签接口",
                 "produces": [
                     "application/json"
@@ -170,6 +185,136 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除标签",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "标签"
+                ],
+                "summary": "删除标签",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "标签ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.Swagger"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth": {
+            "post": {
+                "description": "登录接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "登录",
+                "parameters": [
+                    {
+                        "description": "用户登录",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/params.AuthRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.SwaggerAuth"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/signup": {
+            "post": {
+                "description": "注册接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "注册",
+                "parameters": [
+                    {
+                        "description": "注册用户",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/params.AuthRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.Swagger"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
             }
         }
     },
@@ -192,6 +337,9 @@ const docTemplate = `{
             }
         },
         "app.Swagger": {
+            "type": "object"
+        },
+        "app.SwaggerAuth": {
             "type": "object"
         },
         "app.SwaggerTage": {
@@ -253,44 +401,42 @@ const docTemplate = `{
                 }
             }
         },
+        "params.AuthRequest": {
+            "type": "object",
+            "required": [
+                "app_key",
+                "app_secret"
+            ],
+            "properties": {
+                "app_key": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 5
+                },
+                "app_secret": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 5
+                }
+            }
+        },
         "params.CreateTagRequest": {
             "type": "object",
             "required": [
                 "name"
             ],
             "properties": {
-                "created_by": {
-                    "description": "创建人；以后从 token 中获取；min 和 max 限制的是长度 2-100s",
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                },
                 "name": {
                     "description": "名称；min 和 max 限制的是长度 2-100",
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
-                },
-                "state": {
-                    "description": "from是将传入的参数和结构体进行绑定，但是名称中有\"_\"的时候存在问题，可以设置json来解决\nhttps://juejin.cn/post/7005465902804123679\nexample:\"1\"  swagger tag 设置默认值",
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1
-                    ],
-                    "example": 1
                 }
             }
         },
         "params.UpdateTagRequest": {
             "type": "object",
             "properties": {
-                "modified_by": {
-                    "description": "修改人;以后从token中获取",
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                },
                 "name": {
                     "description": "名称;要修改的标签名称",
                     "type": "string",
@@ -306,6 +452,13 @@ const docTemplate = `{
                     "example": 1
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

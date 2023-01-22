@@ -21,3 +21,11 @@ func NewSetting() (*Setting, error) {
 	}
 	return &Setting{vp}, nil
 }
+
+// ReadSection 序列化到结构体
+func (s *Setting) ReadSection(k string, v interface{}) error {
+	if err := s.vp.UnmarshalKey(k, v); err != nil {
+		return err
+	}
+	return nil
+}

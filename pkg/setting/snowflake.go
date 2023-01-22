@@ -1,8 +1,8 @@
-// Package app 生成 ID 的算法，不使用自增 id，以免一下子就知道用户数量
-package app
+// Package setting
+package setting
 
 import (
-	"fmt"
+	"errors"
 	"time"
 
 	"github.com/sony/sonyflake"
@@ -34,8 +34,8 @@ func NewSonyFlake(machineId uint16, startTime string) (err error) {
 func GetID() (id uint64, err error) {
 	// 如果没有初始化就报这个错误
 	if sonyFlake == nil {
-		err = fmt.Errorf("newSonyFlake not initialized")
-		return
+		// err = fmt.Errorf("newSonyFlake not initialized")
+		return 0, errors.New("newSonyFlake not initialized")
 	}
 	id, err = sonyFlake.NextID()
 	return

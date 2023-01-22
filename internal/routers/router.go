@@ -4,7 +4,8 @@ package routers
 import (
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/middleware"
-	v1 "github.com/aloysZy/gin_web/internal/routers/app/v1"
+	"github.com/aloysZy/gin_web/internal/routers/api"
+	v1 "github.com/aloysZy/gin_web/internal/routers/api/v1"
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/aloysZy/gin_web/docs" // 千万不要忘了导入把你上一步生成的docs
@@ -13,6 +14,7 @@ import (
 	"github.com/swaggo/files"
 )
 
+// NewRouter 初始化路由
 func NewRouter() *gin.Engine {
 	// 设置gin模式，要在初始化之前
 	gin.SetMode(global.ServerSetting.RunMode)
@@ -26,10 +28,15 @@ func NewRouter() *gin.Engine {
 	}
 	// swagger 路由
 	r.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
+	// 鉴权路由
+	auth := api.NewAuth()
+	r.POST("/signup", auth.SignUp)
+	r.POST("/auth", auth.Auth)
 	// 初始化，以后 api 版本变更，直接更换初始化的方法就行了
 	tag := v1.NewTag()
 	// 创建路由组
 	apiV1 := r.Group("/api/v1")
+	apiV1.Use(middleware.JWT())
 	{
 		// 设计路由的时候，使用不同的方法进行不同的操作
 		apiV1.POST("/tags", tag.Create)       // 创建

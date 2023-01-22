@@ -12,4 +12,9 @@ type SwaggerTage struct {
 	Page *Pager
 }
 
+// 空结构体
 type Swagger struct{}
+
+type SwaggerAuth struct {
+	token string
+}

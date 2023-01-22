@@ -4,12 +4,14 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/dao"
 	"github.com/aloysZy/gin_web/internal/model"
-	"github.com/aloysZy/gin_web/internal/routers/app/v1/params"
+	"github.com/aloysZy/gin_web/internal/routers/api/v1/params"
 	"github.com/aloysZy/gin_web/pkg/app"
+	"github.com/aloysZy/gin_web/pkg/setting"
 
 	"go.uber.org/zap"
 )
@@ -30,8 +32,12 @@ func New(ctx context.Context) Service {
 // CreateTag 创建标签的具体逻辑函数
 func (svc *Service) CreateTag(param *params.CreateTagRequest) error {
 	// 创建tagId
-	id, err := app.GetID()
+	id, err := setting.GetID()
 	if err != nil {
+		if err == fmt.Errorf("newSonyFlake not initialized") {
+			zap.L().Error("SonyFlake not initialized error: ", zap.Error(err))
+			return err
+		}
 		zap.L().Error("CreateTag app.GetID error: ", zap.Error(err))
 		return err
 	}

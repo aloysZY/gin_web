@@ -12,6 +12,7 @@ var (
 	AppSetting      *setting.AppSettingS
 	DatabaseSetting *setting.DatabaseSettingS
 	MysqlDBEngine   *gorm.DB
+	JWTSetting      *setting.JWTSettingS
 )
 
 // Trans 上下文用到的常量

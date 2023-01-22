@@ -13,7 +13,6 @@ import (
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/model"
 	"github.com/aloysZy/gin_web/internal/routers"
-	"github.com/aloysZy/gin_web/pkg/app"
 	"github.com/aloysZy/gin_web/pkg/logger"
 	"github.com/aloysZy/gin_web/pkg/setting"
 )
@@ -27,14 +26,15 @@ func init() {
 	if err := setupLogger(); err != nil {
 		log.Fatalf("init.setupLogger err:%v", err)
 	}
-	// 初始化 MySQL
-	if err := setupMysqlDBEngin(); err != nil {
-		log.Fatalf("init.setupMysqlDBEngin err:%v", err)
-	}
 	// 初始化雪花算法
 	if err := setupSonyFlake(); err != nil {
 		log.Fatalf("init.setupSonyFlake err:%v", err)
 	}
+	// 初始化 MySQL
+	if err := setupMysqlDBEngin(); err != nil {
+		log.Fatalf("init.setupMysqlDBEngin err:%v", err)
+	}
+
 }
 
 // setupSetting初始化配置文件
@@ -53,9 +53,13 @@ func setupSetting() error {
 	if err := newSetting.ReadSection("Database", &global.DatabaseSetting); err != nil {
 		return err
 	}
+	if err := newSetting.ReadSection("JWT", &global.JWTSetting); err != nil {
+		return err
+	}
 	// 默认是纳秒，将传入的时间转化为秒
 	global.ServerSetting.ReadTimeout *= time.Second
 	global.ServerSetting.WriteTimeout *= time.Second
+	global.JWTSetting.Expire *= time.Second
 	return nil
 }
 
@@ -80,7 +84,7 @@ func setupMysqlDBEngin() error {
 
 // setupSonyFlake 雪花算法初始化
 func setupSonyFlake() error {
-	if err := app.NewSonyFlake(global.ServerSetting.MachineId, global.ServerSetting.StartTime); err != nil {
+	if err := setting.NewSonyFlake(global.ServerSetting.MachineId, global.ServerSetting.StartTime); err != nil {
 		return err
 	}
 	return nil
@@ -90,6 +94,9 @@ func setupSonyFlake() error {
 // @version 1.0
 // @description 练习 Gin 写 web 服务
 // @termsOfService https://github.com/aloysZY/gin_web
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	fmt.Printf("global.ServerSetting:%#v\nglobal.AppSeting:%#v\nglobal.DatabaseSetting.Mysql:%#v\n", global.ServerSetting, global.AppSetting, global.DatabaseSetting.Mysql)
 
