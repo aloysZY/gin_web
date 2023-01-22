@@ -24,7 +24,6 @@ func NewEmail(info *SMTPInfo) *Email {
 }
 
 func (e *Email) SendMail(to []string, subject, body string) error {
-	to = make([]string, 0, len(to))
 	m := gomail.NewMessage()
 	m.SetHeader("From", e.From)
 	m.SetHeader("To", to...)
