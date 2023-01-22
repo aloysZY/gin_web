@@ -11,7 +11,7 @@ import (
 // CreateTag 创建标签需要的数据整合
 // 传入什么参数，是根据数据库列，就是说创建数据库后创建的模型
 // 方法用指针类型接收者，因为 dao 结构体太大了
-func (d *Dao) CreateTag(id uint64, name, createdBy string, state uint8) error {
+func (d *Dao) CreateTag(id, createdBy uint64, name string, state uint8) error {
 	// 	根据传入的操作初始化结构体，整合操作数据库数据
 	tag := model.Tag{
 		Name:  name,
@@ -48,7 +48,7 @@ func (d *Dao) GetTagList(name string, state uint8, page, pageSize int) ([]*model
 
 // UpdateTag 更新标签状态，如果名称存在一并更新
 // 默认更新标签为不可用状态
-func (d *Dao) UpdateTag(id uint64, name string, state uint8, modifiedBy string) error {
+func (d *Dao) UpdateTag(id, modifiedBy uint64, name string, state uint8) error {
 	// 这里面传给 model 执行应该是数据处理好的
 	// tag := model.Tag{
 	// 	State: state,
@@ -68,7 +68,10 @@ func (d *Dao) UpdateTag(id uint64, name string, state uint8, modifiedBy string) 
 	return tag.Update(d.engine, value)
 }
 
-func (d *Dao) DeleteTag(id uint64) error {
-	tag := model.Tag{TagID: id}
+func (d *Dao) DeleteTag(id, modifiedBy uint64) error {
+	tag := model.Tag{
+		TagID: id,
+		Model: &model.Model{CreatedBy: modifiedBy},
+	}
 	return tag.Delete(d.engine)
 }

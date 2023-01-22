@@ -56,11 +56,6 @@ func ParseToken(token string) (*Claims, error) {
 		if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid { // tokenClaims.Valid 校验 token
 			return claims, nil
 		}
-		// 如要要是失效的，返回一个定义好的错误，前端根据错误，发送rToken
-		// if ok && !tokenClaims.Valid {
-		// 	return claims, errors.New("token failure.")
-		// }
 	}
-
 	return nil, err
 }

@@ -36,7 +36,7 @@ func NewRouter() *gin.Engine {
 	tag := v1.NewTag()
 	// 创建路由组
 	apiV1 := r.Group("/api/v1")
-	apiV1.Use(middleware.JWT())
+	apiV1.Use(middleware.Auth())
 	{
 		// 设计路由的时候，使用不同的方法进行不同的操作
 		apiV1.POST("/tags", tag.Create)       // 创建

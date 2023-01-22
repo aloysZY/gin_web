@@ -61,7 +61,6 @@ func (a *Auth) Auth(c *gin.Context) {
 		response.ToErrorResponse(errcode.UnauthorizedAuthNotExist)
 		return
 	}
-	// 生成 token，传入userID
 	token, err := app.GenerateToken(param.UserId)
 	if err != nil {
 		response.ToErrorResponse(errcode.UnauthorizedTokenGenerate)

@@ -20,8 +20,8 @@ type CreateTagRequest struct {
 	// example:"1"  swagger tag 设置默认值
 	State     uint8  `form:"state,default=1" binding:"oneof=0 1" swaggerignore:"true"`       // 创建状态；默认是 1 正常 0为禁用、1为启用
 	TagId     uint64 `json:"tag_id" form:"tag_id" swaggerignore:"true" swaggerignore:"true"` // 帖子 ID，算法生成
+	CreatedBy uint64 `json:"created_by" form:"created_by" swaggerignore:"true"`              // 创建人；以后从 token 中获取；min 和 max 限制的是长度 2-100s
 	Name      string `form:"name" binding:"required,min=2,max=100"`                          // 名称；min 和 max 限制的是长度 2-100
-	CreatedBy string `json:"created_by" form:"created_by" swaggerignore:"true"`              // 创建人；以后从 token 中获取；min 和 max 限制的是长度 2-100s
 }
 
 // swaggerignore:"true"      swagger忽略这个字段
@@ -33,12 +33,12 @@ type UpdateTagRequest struct {
 	State uint8 `form:"state,default=1" binding:"oneof=0 1" example:"1"` // 状态；可以更新状态为不可用，需要传入
 	// State      uint8  `form:"state" binding:"required,gte=0,lte=1" example:"1"`                // 状态；可以更新状态为不可用，需要传入
 	TagId      uint64 `json:"tag_id" form:"tag_id" binding:"required" swaggerignore:"true"` // 标签 ID
+	ModifiedBy uint64 `json:"modified_by" form:"modified_by" swaggerignore:"true"`          // 修改人;以后从token中获取
 	Name       string `form:"name" binding:"max=100"`                                       // 名称;要修改的标签名称
-	ModifiedBy string `json:"modified_by" form:"modified_by" swaggerignore:"true"`          // 修改人;以后从token中获取
 }
 
 // DeleteTagRequest 删除标签
 type DeleteTagRequest struct {
 	TagId      uint64 `json:"tag_id" form:"tag_id" binding:"required"`
-	ModifiedBy string `json:"modified_by" form:"modified_by" swaggerignore:"true"`
+	ModifiedBy uint64 `json:"modified_by" form:"modified_by" swaggerignore:"true"`
 }

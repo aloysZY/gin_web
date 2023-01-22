@@ -98,6 +98,12 @@ func (t Tag) Create(c *gin.Context) {
 	// 1. 解析参数
 	// params.CreateTagRequest{} 也有一个问题，没传入 state，解析后 state 是 0，这是正常的
 	param := params.CreateTagRequest{State: 1}
+	userID, err := service.GetUserID(c)
+	if err != nil {
+		response.ToErrorResponse(errcode.NotLogin)
+		return
+	}
+	param.CreatedBy = userID
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
@@ -137,6 +143,12 @@ func (t Tag) Update(c *gin.Context) {
 	// 如果现在是启用状态1，我这样初始化后，更新的是标签的名称数据库修改了，就变成 0 了，？存在问题
 	// 初始化赋值，默认为修改名称
 	param := params.UpdateTagRequest{TagId: parseUInt64, State: 1}
+	userID, err := service.GetUserID(c)
+	if err != nil {
+		response.ToErrorResponse(errcode.NotLogin)
+		return
+	}
+	param.ModifiedBy = userID
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
@@ -170,6 +182,12 @@ func (t Tag) Delete(c *gin.Context) {
 		return
 	}
 	param := params.DeleteTagRequest{TagId: parseUInt64}
+	userID, err := service.GetUserID(c)
+	if err != nil {
+		response.ToErrorResponse(errcode.NotLogin)
+		return
+	}
+	param.ModifiedBy = userID
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return

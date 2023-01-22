@@ -25,7 +25,7 @@ App:
 JWT:
   Secret: aloys
   Issuer: web_service
-  Expire: 72   #这是秒，aToken 有效期
+  Expire: 7200   #这是秒，aToken 有效期
 #数据库配置
 Database:
   mysql:

@@ -3,7 +3,7 @@ package dao
 import "github.com/aloysZy/gin_web/internal/model"
 
 func (d *Dao) CreateAuth(userId uint64, appKey, appSecret string) error {
-	auth := model.Auth{UserID: userId, AppKey: appKey, AppSecret: appSecret}
+	auth := model.Auth{UserId: userId, AppKey: appKey, AppSecret: appSecret}
 	return auth.Create(d.engine)
 }
 

@@ -364,7 +364,7 @@ const docTemplate = `{
             "properties": {
                 "created_by": {
                     "description": "创建人",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "created_on": {
                     "description": "创建时间 ，自动获取提交时间",
@@ -380,7 +380,7 @@ const docTemplate = `{
                 },
                 "modified_by": {
                     "description": "修改人",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "modified_on": {
                     "description": "修改时间，自动获取提交时间",

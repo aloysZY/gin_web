@@ -43,7 +43,7 @@ func (svc *Service) CreateTag(param *params.CreateTagRequest) error {
 	}
 	param.TagId = id
 	// 业务逻辑操作，处理业务需要的数据和数据库需要的数据，调用 dao操作数据库
-	err = svc.dao.CreateTag(param.TagId, param.Name, param.CreatedBy, param.State)
+	err = svc.dao.CreateTag(param.TagId, param.CreatedBy, param.Name, param.State)
 	if err != nil {
 		zap.L().Error("svc.dao.CreateTag error: ", zap.Error(err))
 		return err
@@ -70,7 +70,7 @@ func (svc *Service) GetTagList(param *params.ListTagRequest, pager *app.Pager) (
 }
 
 func (svc *Service) UpdateTag(param *params.UpdateTagRequest) error {
-	err := svc.dao.UpdateTag(param.TagId, param.Name, param.State, param.ModifiedBy)
+	err := svc.dao.UpdateTag(param.TagId, param.ModifiedBy, param.Name, param.State)
 	if err != nil {
 		zap.L().Error("svc.dao.UpdateTag error: ", zap.Error(err))
 		return err
@@ -79,5 +79,5 @@ func (svc *Service) UpdateTag(param *params.UpdateTagRequest) error {
 }
 
 func (svc *Service) DeleteTag(param *params.DeleteTagRequest) error {
-	return svc.dao.DeleteTag(param.TagId)
+	return svc.dao.DeleteTag(param.TagId, param.ModifiedBy)
 }
