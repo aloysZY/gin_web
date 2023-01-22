@@ -78,6 +78,7 @@ func (t Tag) List(c *gin.Context) {
 		response.ToErrorResponse(errcode.ErrorGetTagListFail)
 		return
 	}
+	// zap.L().Fatal("测试email")
 	response.ToResponseList(tagList, totalRows)
 	return
 }

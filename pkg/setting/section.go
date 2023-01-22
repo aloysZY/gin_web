@@ -63,3 +63,13 @@ type DatabaseSettingS struct {
 	Mysql *MysqlSettingS
 	Redis *RedisSettingS
 }
+
+type EmailSettingS struct {
+	Host     string
+	Port     int
+	UserName string
+	Password string
+	IsSSL    bool
+	From     string
+	To       []string
+}

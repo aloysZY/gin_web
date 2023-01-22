@@ -26,6 +26,16 @@ JWT:
   Secret: aloys
   Issuer: web_service
   Expire: 7200   #这是秒，aToken 有效期
+
+Email:
+  Host: smtp.qq.com
+  Port: 465
+  UserName: 852979908@.com
+  Password: pjbbcnafarnebeae
+  IsSSL: true
+  From: 852979908@qq.com
+  To:
+    - 852979908@qq.com
 #数据库配置
 Database:
   mysql:

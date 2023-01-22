@@ -13,6 +13,7 @@ var (
 	DatabaseSetting *setting.DatabaseSettingS
 	MysqlDBEngine   *gorm.DB
 	JWTSetting      *setting.JWTSettingS
+	EmailSetting    *setting.EmailSettingS
 )
 
 // Trans 上下文用到的常量

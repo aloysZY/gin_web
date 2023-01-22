@@ -56,6 +56,9 @@ func setupSetting() error {
 	if err := newSetting.ReadSection("JWT", &global.JWTSetting); err != nil {
 		return err
 	}
+	if err := newSetting.ReadSection("Email", &global.EmailSetting); err != nil {
+		return err
+	}
 	// 默认是纳秒，将传入的时间转化为秒
 	global.ServerSetting.ReadTimeout *= time.Second
 	global.ServerSetting.WriteTimeout *= time.Second
@@ -98,7 +101,7 @@ func setupSonyFlake() error {
 // @in header
 // @name Authorization
 func main() {
-	fmt.Printf("global.ServerSetting:%#v\nglobal.AppSeting:%#v\nglobal.DatabaseSetting.Mysql:%#v\n", global.ServerSetting, global.AppSetting, global.DatabaseSetting.Mysql)
+	fmt.Printf("global.ServerSetting:%#v\nglobal.AppSeting:%#v\nglobal.DatabaseSetting.Mysql:%#v\nglobal.JWTSetting:%#v\nglobal.EmailSetting:%#v\n", global.ServerSetting, global.AppSetting, global.DatabaseSetting.Mysql, global.JWTSetting, global.EmailSetting)
 
 	router := routers.NewRouter()
 	// 不使用 run 启动，自定义配置服务参数
