@@ -3,6 +3,7 @@ package middleware
 import (
 	"time"
 
+	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -23,6 +24,9 @@ func GinLogger() gin.HandlerFunc {
 		c.Next()
 
 		cost := time.Since(start)
+		// 获取登录的用户
+		_userID, _ := c.Get(global.UserId)
+		userID, _ := _userID.(uint64)
 		logger.Lg.Info(
 			path,
 			zap.Int("status", c.Writer.Status()),
@@ -31,6 +35,7 @@ func GinLogger() gin.HandlerFunc {
 			zap.String("query", query),
 			// zap.String("body", string(bodyByte)),
 			zap.String("ip", c.ClientIP()),
+			zap.Uint64("user", userID),
 			zap.String("user-agent", c.Request.UserAgent()),
 			zap.String("errors", c.Errors.ByType(gin.ErrorTypePrivate).String()),
 			zap.Duration("cost", cost),
