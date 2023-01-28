@@ -2,7 +2,6 @@ package upload
 
 import (
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"os"
 	"path"
@@ -54,10 +53,12 @@ func CheckContainExt(t FileType, name string) bool {
 }
 
 // CheckMaxSize 判断文件大小
-func CheckMaxSize(t FileType, f multipart.File) bool {
+// func CheckMaxSize(t FileType, f multipart.File) bool {
+func CheckMaxSize(t FileType, f *multipart.FileHeader) bool {
 	// 这步骤有点多余了，fileheader 里面有 size，就是文件大小，不需要读到内存
-	content, _ := ioutil.ReadAll(f)
-	size := len(content)
+	// content, _ := ioutil.ReadAll(f)
+	// size := len(content)
+	size := int(f.Size)
 	switch t {
 	case TypeImage:
 		if size >= global.AppSetting.UploadImageMaxSize*1024*1024 {

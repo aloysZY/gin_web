@@ -16,7 +16,8 @@ func NewUpload() Upload { return Upload{} }
 func (u Upload) UploadFile(c *gin.Context) {
 	response := app.NewResponse(c)
 	// 获取上传的文件，  <input type="file" name="file"> file是前端文件的名字
-	file, fileHeader, err := c.Request.FormFile("file") // 文件名称
+	// file, fileHeader, err := c.Request.FormFile("file") // 文件名称
+	fileHeader, err := c.FormFile("file")
 	if err != nil {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(err.Error()))
 		return
@@ -29,7 +30,8 @@ func (u Upload) UploadFile(c *gin.Context) {
 	}
 
 	svc := service.New(c.Request.Context())
-	fileInfo, err := svc.UploadFile(upload.FileType(fileType), file, fileHeader)
+	// fileInfo, err := svc.UploadFile(upload.FileType(fileType), file, fileHeader)
+	fileInfo, err := svc.UploadFile(upload.FileType(fileType), fileHeader)
 	if err != nil {
 		response.ToErrorResponse(errcode.ErrorUploadFileFail.WithDetails(err.Error()))
 		return

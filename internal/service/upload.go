@@ -16,13 +16,15 @@ type FileInfo struct {
 }
 
 // UploadFile 保存文件
-func (svc *Service) UploadFile(fileType upload.FileType, file multipart.File, fileHeader *multipart.FileHeader) (*FileInfo, error) {
+// func (svc *Service) UploadFile(fileType upload.FileType, file multipart.File, fileHeader *multipart.FileHeader) (*FileInfo, error) {
+func (svc *Service) UploadFile(fileType upload.FileType, fileHeader *multipart.FileHeader) (*FileInfo, error) {
 	fileName := upload.GetFileName(fileHeader.Filename)
 	if !upload.CheckContainExt(fileType, fileName) {
 		zap.L().Error("upload.CheckContainExt failed")
 		return nil, errors.New("file suffix is not supported")
 	}
-	if upload.CheckMaxSize(fileType, file) {
+	// if upload.CheckMaxSize(fileType, file)
+	if upload.CheckMaxSize(fileType, fileHeader) {
 		zap.L().Error("upload.CheckMaxSize failed")
 		return nil, errors.New("exceeded maximum file limit")
 	}
