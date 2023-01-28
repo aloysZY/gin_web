@@ -3,6 +3,7 @@ package routers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/middleware"
@@ -24,10 +25,11 @@ func NewRouter() *gin.Engine {
 	r := gin.New() // 使用自己的中间件
 	// 添加日志后设置中间件,添加翻译器中间件
 	if global.ServerSetting.RunMode == "release" {
-		r.Use(middleware.GinLogger(), middleware.GinRecovery(), middleware.Translations())
+		r.Use(middleware.GinLogger(), middleware.GinRecovery(), middleware.ContextTimeout(time.Nanosecond), middleware.Translations())
 	} else {
-		r.Use(middleware.GinLogger(), middleware.GinRecovery(), middleware.Translations(), gin.Logger())
+		r.Use(middleware.GinLogger(), middleware.GinRecovery(), middleware.ContextTimeout(time.Nanosecond), middleware.Translations(), gin.Logger())
 	}
+	r.Use(middleware.Tracing()) // 要在所有路由注册之前使用
 	// swagger 路由
 	r.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
 	// 鉴权路由
@@ -41,6 +43,7 @@ func NewRouter() *gin.Engine {
 	upload := v1.NewUpload()
 	// 创建路由组
 	apiV1 := r.Group("/api/v1")
+
 	apiV1.Use(middleware.Auth())
 	{
 		// 设计路由的时候，使用不同的方法进行不同的操作

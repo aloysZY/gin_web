@@ -3,11 +3,8 @@
 package service
 
 import (
-	"context"
 	"fmt"
 
-	"github.com/aloysZy/gin_web/global"
-	"github.com/aloysZy/gin_web/internal/dao"
 	"github.com/aloysZy/gin_web/internal/model"
 	"github.com/aloysZy/gin_web/internal/routers/api/v1/params"
 	"github.com/aloysZy/gin_web/pkg/app"
@@ -15,19 +12,6 @@ import (
 
 	"go.uber.org/zap"
 )
-
-// Service 封装了上下文和 dao
-type Service struct {
-	ctx context.Context
-	dao *dao.Dao
-}
-
-// New 初始化svc 上下文和 dao
-func New(ctx context.Context) Service {
-	svc := Service{ctx: ctx}
-	svc.dao = dao.New(global.MysqlDBEngine)
-	return svc
-}
 
 // CreateTag 创建标签的具体逻辑函数
 func (svc *Service) CreateTag(param *params.CreateTagRequest) error {

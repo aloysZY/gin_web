@@ -27,6 +27,9 @@ func GinLogger() gin.HandlerFunc {
 		// 获取登录的用户
 		_userID, _ := c.Get(global.UserId)
 		userID, _ := _userID.(uint64)
+
+		traceId := c.GetString(global.TraceId)
+		// spanId := c.GetString(global.SpanId)  //子节点 ID 暂时不记录
 		logger.Lg.Info(
 			path,
 			zap.Int("status", c.Writer.Status()),
@@ -36,6 +39,8 @@ func GinLogger() gin.HandlerFunc {
 			// zap.String("body", string(bodyByte)),
 			zap.String("ip", c.ClientIP()),
 			zap.Uint64("user", userID),
+			zap.String("trace-ID", traceId),
+			// zap.String("span-ID", spanId),
 			zap.String("user-agent", c.Request.UserAgent()),
 			zap.String("errors", c.Errors.ByType(gin.ErrorTypePrivate).String()),
 			zap.Duration("cost", cost),

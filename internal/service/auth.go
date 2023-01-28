@@ -43,7 +43,7 @@ func (svc *Service) CheckAuth(param *params.AuthRequest) error {
 		param.UserId = auth.UserId // 有多重方法可以实现这个值传出去，这里比较方便
 		return nil
 	}
-	return errors.New("auth info does not exist.")
+	return errors.New("auth info does not exist")
 }
 
 func GetUserID(c *gin.Context) (uint64, error) {

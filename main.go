@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -16,9 +18,19 @@ import (
 	"github.com/aloysZy/gin_web/pkg/email"
 	"github.com/aloysZy/gin_web/pkg/logger"
 	"github.com/aloysZy/gin_web/pkg/setting"
+	"github.com/aloysZy/gin_web/pkg/tracer"
+)
+
+var (
+	port    string
+	runMode string
+	config  string
 )
 
 func init() {
+	if err := setupFlag(); err != nil {
+		log.Fatalf("init.setupFlag err:%#v", err)
+	}
 	// 初始化配置文件
 	if err := setupSetting(); err != nil {
 		log.Fatalf("init.setupSetting err:%v", err)
@@ -36,12 +48,31 @@ func init() {
 		log.Fatalf("init.setupMysqlDBEngin err:%v", err)
 	}
 	// 初始化邮件
-	setupEmail()
+	if err := setupEmail(); err != nil {
+		log.Fatalf("setupEmail err:%v", err)
+	}
+	// 初始化路由追踪
+	if err := setupTracer(); err != nil {
+		log.Fatalf("setupTracer err:%v", err)
+	}
+}
+
+// 设置传入配置，如果指定了，就使用指定的文件，否则就用默认的
+func setupFlag() error {
+	// 不设置默认值，如果读取不到，就是要配置文件参数
+	flag.StringVar(&port, "p", "", "启动端口")
+	flag.StringVar(&runMode, "m", "", "启动模式")
+	flag.StringVar(&config, "c", "configs/", "指定配置文件路径")
+	// flag.BoolVar(&isVersion, "version", false, "编译信息")
+	flag.Parse()
+	return nil
 }
 
 // setupSetting初始化配置文件
 func setupSetting() error {
-	newSetting, err := setting.NewSetting()
+	// newSetting, err := setting.NewSetting() 这个就要变成可变长度参数
+	// 默认也会传入一个configs/目录
+	newSetting, err := setting.NewSetting(strings.Split(config, ",")...)
 	if err != nil {
 		return err
 	}
@@ -65,6 +96,14 @@ func setupSetting() error {
 	global.ServerSetting.ReadTimeout *= time.Second
 	global.ServerSetting.WriteTimeout *= time.Second
 	global.JWTSetting.Expire *= time.Second
+
+	// 要是设置了 port 参数，那么在最后的时候，将解析后的配置参数，设置为传入的参数
+	if port != "" {
+		global.ServerSetting.HttpPort = port
+	}
+	if runMode != "" {
+		global.ServerSetting.RunMode = runMode
+	}
 	return nil
 }
 
@@ -96,9 +135,21 @@ func setupSonyFlake() error {
 }
 
 // setupEmail 初始化邮件
-func setupEmail() {
+func setupEmail() error {
 	global.EmailEngine = email.NewEmail(global.EmailSetting)
-	return
+	return nil
+}
+
+func setupTracer() error {
+	jaegerTracer, _, err := tracer.NewJaegerTracer(
+		"gin_web",
+		"127.0.0.1:6831",
+	)
+	if err != nil {
+		return err
+	}
+	global.Tracer = jaegerTracer
+	return nil
 }
 
 // @title gin_web

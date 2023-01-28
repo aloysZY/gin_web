@@ -6,6 +6,7 @@ import (
 
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/pkg/setting"
+	otgorm "github.com/eddycjy/opentracing-gorm"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -54,6 +55,7 @@ func NewMysqlDBEngine(mysqlDatabaseSetting *setting.MysqlSettingS) (*gorm.DB, er
 	// maxIdleTime 空闲连接最大存活时间
 	db.DB().SetMaxIdleConns(mysqlDatabaseSetting.MaxIdleConns)
 	db.DB().SetMaxOpenConns(mysqlDatabaseSetting.MaxOpenConns)
+	otgorm.AddGormCallbacks(db)
 	return db, nil
 }
 
