@@ -19,17 +19,21 @@ type ServerSettingS struct {
 // AppSettingS 应用配置
 type AppSettingS struct {
 	// Model string  #和RunMode设置为一个级别吧
-	Level           string // 日志级别 记录和显示的日志信息级别
-	LogSavePath     string
-	LogFileName     string
-	LogFileExt      string
-	MaxSize         int
-	MaxBackups      int
-	MaxAge          int
-	DefaultPageSize int
-	MaxPageSize     int
-	LocalTime       bool
-	Compress        bool
+	Level                string // 日志级别 记录和显示的日志信息级别
+	LogSavePath          string
+	LogFileName          string
+	LogFileExt           string
+	UploadSavePath       string
+	UploadServerUrl      string
+	UploadImageMaxSize   int
+	MaxSize              int
+	MaxBackups           int
+	MaxAge               int
+	DefaultPageSize      int
+	MaxPageSize          int
+	LocalTime            bool
+	Compress             bool
+	UploadImageAllowExts []string
 }
 
 // MysqlSettingS MySQL 配置

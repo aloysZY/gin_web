@@ -2,6 +2,8 @@
 package routers
 
 import (
+	"net/http"
+
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/middleware"
 	"github.com/aloysZy/gin_web/internal/routers/api"
@@ -32,8 +34,11 @@ func NewRouter() *gin.Engine {
 	auth := api.NewAuth()
 	r.POST("/signup", auth.SignUp)
 	r.POST("/auth", auth.Auth)
+
 	// 初始化，以后 api 版本变更，直接更换初始化的方法就行了
 	tag := v1.NewTag()
+	// upload :=v1.NewUpload()
+	upload := v1.NewUpload()
 	// 创建路由组
 	apiV1 := r.Group("/api/v1")
 	apiV1.Use(middleware.Auth())
@@ -44,6 +49,9 @@ func NewRouter() *gin.Engine {
 		apiV1.DELETE("/tags/:id", tag.Delete) // 删除
 		apiV1.PUT("/tags/:id", tag.Update)    // 全量更新
 		// apiV1.PATCH("/tags/:id/state", tag.Update) // 更新部分；这个就是改变标签是否可用和PUT重复了
+
+		apiV1.POST("/upload/file", upload.UploadFile)
+		apiV1.StaticFS("/static", http.Dir(global.AppSetting.UploadSavePath))
 
 		apiV1.POST("/articles")            // 创建
 		apiV1.GET("/articles")             // 获取
