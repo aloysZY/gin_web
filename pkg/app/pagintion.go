@@ -1,14 +1,16 @@
 package app
 
 import (
+	"strconv"
+
 	"github.com/aloysZy/gin_web/global"
-	"github.com/aloysZy/gin_web/pkg/convert"
 	"github.com/gin-gonic/gin"
 )
 
 // GetPage 根据请求 URL 的相关key设置页码
 func GetPage(c *gin.Context) int {
-	page := convert.StrTo(c.Query("page")).MustInt()
+	// page := convert.StrTo(c.Query("page")).MustInt()
+	page, _ := strconv.Atoi(c.Query("page"))
 	if page <= 0 {
 		return 1
 	}
@@ -17,7 +19,8 @@ func GetPage(c *gin.Context) int {
 
 // GetPageSize 根据请求 URL 和默认最大显示数量设置每页展示最大值
 func GetPageSize(c *gin.Context) int {
-	pageSize := convert.StrTo(c.Query("page_size")).MustInt()
+	// pageSize := convert.StrTo(c.Query("page_size")).MustInt()
+	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 	if pageSize <= 0 {
 		return global.AppSetting.DefaultPageSize
 	}
