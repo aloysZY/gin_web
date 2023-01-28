@@ -2,7 +2,6 @@
 package global
 
 import (
-	"github.com/aloysZy/gin_web/pkg/email"
 	"github.com/aloysZy/gin_web/pkg/setting"
 	"github.com/jinzhu/gorm"
 	"github.com/opentracing/opentracing-go"
@@ -16,7 +15,7 @@ var (
 	JWTSetting      *setting.JWTSettingS
 	EmailSetting    *setting.EmailSettingS
 
-	EmailEngine   *email.Email
+	EmailEngine   *setting.Email
 	MysqlDBEngine *gorm.DB
 	Tracer        opentracing.Tracer
 )

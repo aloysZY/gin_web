@@ -15,10 +15,8 @@ import (
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/model"
 	"github.com/aloysZy/gin_web/internal/routers"
-	"github.com/aloysZy/gin_web/pkg/email"
 	"github.com/aloysZy/gin_web/pkg/logger"
 	"github.com/aloysZy/gin_web/pkg/setting"
-	"github.com/aloysZy/gin_web/pkg/tracer"
 )
 
 var (
@@ -136,12 +134,12 @@ func setupSonyFlake() error {
 
 // setupEmail 初始化邮件
 func setupEmail() error {
-	global.EmailEngine = email.NewEmail(global.EmailSetting)
+	global.EmailEngine = setting.NewEmail(global.EmailSetting)
 	return nil
 }
 
 func setupTracer() error {
-	jaegerTracer, _, err := tracer.NewJaegerTracer(
+	jaegerTracer, _, err := setting.NewJaegerTracer(
 		"gin_web",
 		"127.0.0.1:6831",
 	)

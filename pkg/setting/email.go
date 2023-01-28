@@ -1,9 +1,8 @@
-package email
+package setting
 
 import (
 	"crypto/tls"
 
-	"github.com/aloysZy/gin_web/pkg/setting"
 	"gopkg.in/gomail.v2"
 )
 
@@ -20,7 +19,7 @@ type SMTPInfo struct {
 	From     string
 }
 
-func NewEmail(email *setting.EmailSettingS) *Email {
+func NewEmail(email *EmailSettingS) *Email {
 	return &Email{
 		SMTPInfo: &SMTPInfo{
 			Host:     email.Host,
