@@ -7,7 +7,12 @@ func (d *Dao) CreateAuth(userId uint64, appKey, appSecret string) error {
 	return auth.Create(d.engine)
 }
 
-func (d *Dao) GetAuth(appKey, appSecret string) (model.Auth, error) {
-	auth := model.Auth{AppKey: appKey, AppSecret: appSecret}
+// func (d *Dao) GetAuth(appKey, appSecret string) (model.Auth, error) {
+// 	auth := model.Auth{AppKey: appKey, AppSecret: appSecret}
+// 	return auth.Get(d.engine)
+// }
+
+func (d *Dao) GetAuth(appKey string) (model.Auth, error) {
+	auth := model.Auth{AppKey: appKey}
 	return auth.Get(d.engine)
 }

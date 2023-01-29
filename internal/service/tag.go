@@ -8,6 +8,7 @@ import (
 	"github.com/aloysZy/gin_web/internal/model"
 	"github.com/aloysZy/gin_web/internal/routers/api/v1/params"
 	"github.com/aloysZy/gin_web/pkg/app"
+	"github.com/aloysZy/gin_web/pkg/errcode"
 	"github.com/aloysZy/gin_web/pkg/setting"
 
 	"go.uber.org/zap"
@@ -26,6 +27,16 @@ func (svc *Service) CreateTag(param *params.CreateTagRequest) error {
 		return err
 	}
 	param.TagId = id
+	// 创建的时候标签去重
+	// 查询数据库，看看标签存在不存在,存在返回标签存在错误
+	count, err := svc.dao.GetTag(param.Name, param.State)
+	if count != 0 {
+		err = errcode.ErrorTagExists
+		// err = errors.New("TagName exists")
+		zap.L().Error("svc.dao.GetTag failed:", zap.Error(err))
+		return err
+	}
+
 	// 业务逻辑操作，处理业务需要的数据和数据库需要的数据，调用 dao操作数据库
 	err = svc.dao.CreateTag(param.TagId, param.CreatedBy, param.Name, param.State)
 	if err != nil {
@@ -54,7 +65,8 @@ func (svc *Service) GetTagList(param *params.ListTagRequest, pager *app.Pager) (
 }
 
 func (svc *Service) UpdateTag(param *params.UpdateTagRequest) error {
-	err := svc.dao.UpdateTag(param.TagId, param.ModifiedBy, param.Name, param.State)
+	// 修改的时候不能修改标签名称，可以重新创建
+	err := svc.dao.UpdateTag(param.TagId, param.ModifiedBy, param.State)
 	if err != nil {
 		zap.L().Error("svc.dao.UpdateTag error: ", zap.Error(err))
 		return err

@@ -113,6 +113,10 @@ func (t Tag) Create(c *gin.Context) {
 	// 创建 tagID
 	svc := service.New(c.Request.Context())
 	if err := svc.CreateTag(&param); err != nil {
+		if err == errcode.ErrorTagExists {
+			response.ToErrorResponse(errcode.ErrorTagExists)
+			return
+		}
 		response.ToErrorResponse(errcode.ErrorCreateTagFail)
 		return
 	}

@@ -34,7 +34,7 @@ type UpdateTagRequest struct {
 	// State      uint8  `form:"state" binding:"required,gte=0,lte=1" example:"1"`                // 状态；可以更新状态为不可用，需要传入
 	TagId      uint64 `json:"tag_id" form:"tag_id" binding:"required" swaggerignore:"true"` // 标签 ID
 	ModifiedBy uint64 `json:"modified_by" form:"modified_by" swaggerignore:"true"`          // 修改人;以后从token中获取
-	Name       string `form:"name" binding:"max=100"`                                       // 名称;要修改的标签名称
+	// Name       string `form:"name" binding:"max=100"`                                       // 名称;要修改的标签名称
 }
 
 // DeleteTagRequest 删除标签

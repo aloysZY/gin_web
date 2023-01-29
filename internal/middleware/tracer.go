@@ -8,7 +8,7 @@ import (
 	"github.com/uber/jaeger-client-go"
 
 	"github.com/gin-gonic/gin"
-	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go"
 )
 
 func Tracing() func(c *gin.Context) {

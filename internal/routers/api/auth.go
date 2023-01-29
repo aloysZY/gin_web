@@ -57,7 +57,7 @@ func (a *Auth) Auth(c *gin.Context) {
 		return
 	}
 	svc := service.New(c.Request.Context())
-	// 先检查账号密码是否存在
+	// 先检查用户是否存在
 	if err := svc.CheckAuth(&param); err != nil {
 		response.ToErrorResponse(errcode.UnauthorizedAuthNotExist)
 		return

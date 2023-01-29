@@ -30,6 +30,10 @@ func (e *Error) ErrorF() string {
 	return fmt.Sprintf("错误码：%d, 错误信息:：%s", e.Code(), e.Msg())
 }
 
+func (e *Error) Error() string {
+	return e.Msg()
+}
+
 // Code 返回单个错误码
 func (e *Error) Code() int {
 	return e.code
