@@ -42,7 +42,9 @@ func (t Tag) Count(db *gorm.DB) (int, error) {
 
 // List 查找符合条件标签列表
 // 稍后设置为默认按照时间反序排列
-func (t Tag) List(db *gorm.DB, pageOffset, pageSize int) (tags []*Tag, err error) {
+func (t Tag) List(db *gorm.DB, pageOffset, pageSize int) ([]*Tag, error) {
+	var tags []*Tag
+	var err error
 	if pageOffset >= 0 && pageSize > 0 {
 		db = db.Offset(pageOffset).Limit(pageSize)
 	}
