@@ -9,8 +9,11 @@ Server:
   StartTime: "2023-1-19"   #这里要写成字符串，不然解析为时间类型了
 #  应用配置
 App:
-#  Model: dev
+  #这个有时间再看看，目前不生效好像
+  ContextTimeout:
+    ContextTimeout: 1 #这里单位也是秒
   Log:
+    #  Model: dev
     Level: debug  #日志输出级别
     LogSavePath: storage/logs
     LogFileName: gin_web
@@ -46,9 +49,16 @@ App:
     From: XXXXXX
     To:
       - XXXXXX
+  #令牌桶
+  Limiter:
+    Auth:
+      Key: /auth        # 限流的接口
+      FillInterval: 10       # 添加的时间间隔，单位秒
+      Capacity: 10           #令牌桶容量
+      Quantum: 10           #每次添加令牌
 #数据库配置
 Database:
-  mysql:
+  Mysql:
     DBType: mysql
     UserName: root
     Password: ydw@123
@@ -60,6 +70,6 @@ Database:
     ParseTime: True
     MaxIdleConns: 10
     MaxOpenConns: 30
-  redis:
+  Redis:
     Host: 127.0.0.1
     Port: 6379

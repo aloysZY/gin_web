@@ -11,19 +11,6 @@ definitions:
         description: 总行数
         type: integer
     type: object
-  app.Swagger:
-    type: object
-  app.SwaggerAuth:
-    type: object
-  app.SwaggerTage:
-    properties:
-      list:
-        items:
-          $ref: '#/definitions/model.Tag'
-        type: array
-      page:
-        $ref: '#/definitions/app.Pager'
-    type: object
   errcode.Error:
     type: object
   model.Tag:
@@ -95,6 +82,19 @@ definitions:
         example: 1
         type: integer
     type: object
+  third_party.Swagger:
+    type: object
+  third_party.SwaggerAuth:
+    type: object
+  third_party.SwaggerTage:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/model.Tag'
+        type: array
+      page:
+        $ref: '#/definitions/app.Pager'
+    type: object
 info:
   contact: {}
   description: 练习 Gin 写 web 服务
@@ -133,7 +133,7 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/app.SwaggerTage'
+            $ref: '#/definitions/third_party.SwaggerTage'
         "400":
           description: 请求错误
           schema:
@@ -162,7 +162,7 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/app.Swagger'
+            $ref: '#/definitions/third_party.Swagger'
         "400":
           description: 请求错误
           schema:
@@ -191,7 +191,7 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/app.Swagger'
+            $ref: '#/definitions/third_party.Swagger'
         "400":
           description: 请求错误
           schema:
@@ -225,7 +225,7 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/app.Swagger'
+            $ref: '#/definitions/third_party.Swagger'
         "400":
           description: 请求错误
           schema:
@@ -255,7 +255,7 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/app.SwaggerAuth'
+            $ref: '#/definitions/third_party.SwaggerAuth'
         "400":
           description: 请求错误
           schema:
@@ -283,7 +283,7 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/app.Swagger'
+            $ref: '#/definitions/third_party.Swagger'
         "400":
           description: 请求错误
           schema:

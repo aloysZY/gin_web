@@ -3,8 +3,8 @@ package middleware
 import (
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/pkg/app"
+	"github.com/aloysZy/gin_web/pkg/auth"
 	"github.com/aloysZy/gin_web/pkg/errcode"
-	jwt2 "github.com/aloysZy/gin_web/pkg/jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -42,7 +42,7 @@ func Auth() gin.HandlerFunc {
 		// 	}
 		// }
 		// }
-		claims, err := jwt2.ParseToken(token)
+		claims, err := auth.ParseToken(token)
 		if err != nil {
 			switch err.(*jwt.ValidationError).Errors {
 			// 判断token 是否超时

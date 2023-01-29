@@ -13,4 +13,5 @@ var (
 	UnauthorizedTokenTimeout  = NewError(10000006, "鉴权失败，Token超时")
 	UnauthorizedTokenGenerate = NewError(10000007, "鉴权失败，Token生成失败")
 	TooManyRequests           = NewError(10000008, "请求过多")
+	GatewayTimeout            = NewError(10000009, "请求超时")
 )

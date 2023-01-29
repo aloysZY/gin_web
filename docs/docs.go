@@ -68,7 +68,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/app.SwaggerTage"
+                            "$ref": "#/definitions/third_party.SwaggerTage"
                         }
                     },
                     "400": {
@@ -114,7 +114,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/app.Swagger"
+                            "$ref": "#/definitions/third_party.Swagger"
                         }
                     },
                     "400": {
@@ -169,7 +169,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/app.Swagger"
+                            "$ref": "#/definitions/third_party.Swagger"
                         }
                     },
                     "400": {
@@ -213,7 +213,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/app.Swagger"
+                            "$ref": "#/definitions/third_party.Swagger"
                         }
                     },
                     "400": {
@@ -256,7 +256,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/app.SwaggerAuth"
+                            "$ref": "#/definitions/third_party.SwaggerAuth"
                         }
                     },
                     "400": {
@@ -299,7 +299,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/app.Swagger"
+                            "$ref": "#/definitions/third_party.Swagger"
                         }
                     },
                     "400": {
@@ -333,26 +333,6 @@ const docTemplate = `{
                 "total_rows": {
                     "description": "总行数",
                     "type": "integer"
-                }
-            }
-        },
-        "app.Swagger": {
-            "type": "object"
-        },
-        "app.SwaggerAuth": {
-            "type": "object"
-        },
-        "app.SwaggerTage": {
-            "type": "object",
-            "properties": {
-                "list": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Tag"
-                    }
-                },
-                "page": {
-                    "$ref": "#/definitions/app.Pager"
                 }
             }
         },
@@ -450,6 +430,26 @@ const docTemplate = `{
                         1
                     ],
                     "example": 1
+                }
+            }
+        },
+        "third_party.Swagger": {
+            "type": "object"
+        },
+        "third_party.SwaggerAuth": {
+            "type": "object"
+        },
+        "third_party.SwaggerTage": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Tag"
+                    }
+                },
+                "page": {
+                    "$ref": "#/definitions/app.Pager"
                 }
             }
         }

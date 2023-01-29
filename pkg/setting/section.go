@@ -18,13 +18,16 @@ type ServerSettingS struct {
 
 // AppSettingS 应用配置
 type AppSettingS struct {
-	Log         *LogSettingS
-	Page        *PageSettings
-	UploadImage *UploadImageSettings
-	JWT         *JWTSettingS
-	Email       *EmailSettingS
+	Log            *LogSettingS
+	Page           *PageSettings
+	UploadImage    *UploadImageSettings
+	JWT            *JWTSettingS
+	Email          *EmailSettingS
+	Limiter        *LimiterSettingS
+	ContextTimeout *ContextTimeoutSettingS
 }
 
+// LogSettingS 日志配置
 type LogSettingS struct {
 	// Model string  #和RunMode设置为一个级别吧
 	Level       string // 日志级别 记录和显示的日志信息级别
@@ -38,11 +41,13 @@ type LogSettingS struct {
 	Compress    bool
 }
 
+// PageSettings 默认页面配置
 type PageSettings struct {
 	DefaultPageSize int
 	MaxPageSize     int
 }
 
+// UploadImageSettings 图片上传配置
 type UploadImageSettings struct {
 	UploadImageMaxSize   int
 	UploadSavePath       string
@@ -50,12 +55,14 @@ type UploadImageSettings struct {
 	UploadImageAllowExts []string
 }
 
+// JWTSettingS jwt 配置
 type JWTSettingS struct {
 	Secret string
 	Issuer string
 	Expire time.Duration
 }
 
+// EmailSettingS 邮件配置
 type EmailSettingS struct {
 	Host     string
 	Port     int
@@ -64,6 +71,24 @@ type EmailSettingS struct {
 	IsSSL    bool
 	From     string
 	To       []string
+}
+
+// LimiterSettingS 令牌桶
+type LimiterSettingS struct {
+	Auth *AuthSettingS
+}
+
+// AuthSettingS 登录令牌桶配置
+type AuthSettingS struct {
+	Key          string        // 限流的接口名称
+	FillInterval time.Duration // 添加的时间间隔
+	Capacity     int64         // 令牌桶容量
+	Quantum      int64         // 每次添加令牌
+}
+
+// ContextTimeoutSettingS 统一超时时间
+type ContextTimeoutSettingS struct {
+	ContextTimeout time.Duration
 }
 
 // DatabaseSettingS 数据库配置

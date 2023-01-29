@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -14,14 +15,20 @@ import (
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/model"
 	"github.com/aloysZy/gin_web/internal/routers"
+	"github.com/aloysZy/gin_web/pkg/limiter"
 	"github.com/aloysZy/gin_web/pkg/logger"
 	"github.com/aloysZy/gin_web/pkg/setting"
 )
 
 var (
-	port    string
-	runMode string
-	config  string
+	port         string
+	runMode      string
+	config       string
+	isVersion    bool
+	buildVersion string
+	buildTime    string
+	gitCommitId  string
+	goVersion    string
 )
 
 func init() {
@@ -36,13 +43,17 @@ func init() {
 	if err := setupLogger(); err != nil {
 		log.Fatalf("init.setupLogger err:%v", err)
 	}
-	// 初始化雪花算法
-	if err := setupSonyFlake(); err != nil {
-		log.Fatalf("init.setupSonyFlake err:%v", err)
-	}
 	// 初始化 MySQL
 	if err := setupMysqlDBEngin(); err != nil {
 		log.Fatalf("init.setupMysqlDBEngin err:%v", err)
+	}
+	// 初始化令牌桶
+	if err := setupLimiters(); err != nil {
+		log.Fatalf("setupLimiters err:%v", err)
+	}
+	// 初始化雪花算法
+	if err := setupSonyFlake(); err != nil {
+		log.Fatalf("init.setupSonyFlake err:%v", err)
 	}
 	// 初始化邮件
 	if err := setupEmail(); err != nil {
@@ -60,7 +71,7 @@ func setupFlag() error {
 	flag.StringVar(&port, "p", "", "启动端口")
 	flag.StringVar(&runMode, "m", "", "启动模式")
 	flag.StringVar(&config, "c", "configs/", "指定配置文件路径")
-	// flag.BoolVar(&isVersion, "version", false, "编译信息")
+	flag.BoolVar(&isVersion, "version", false, "编译信息")
 	flag.Parse()
 	return nil
 }
@@ -93,6 +104,8 @@ func setupSetting() error {
 	global.ServerSetting.ReadTimeout *= time.Second
 	global.ServerSetting.WriteTimeout *= time.Second
 	global.AppSetting.JWT.Expire *= time.Second
+	global.AppSetting.ContextTimeout.ContextTimeout *= time.Second
+	global.AppSetting.Limiter.Auth.FillInterval *= time.Second
 
 	// 要是设置了 port 参数，那么在最后的时候，将解析后的配置参数，设置为传入的参数
 	if port != "" {
@@ -120,6 +133,19 @@ func setupMysqlDBEngin() error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+// 接口限流初始化
+func setupLimiters() error {
+	global.AuthMethodLimiters = limiter.NewMethodLimiter().AddBuckets(
+		limiter.LimiterBucketRule{
+			Key:          global.AppSetting.Limiter.Auth.Key,          // 限流的接口
+			FillInterval: global.AppSetting.Limiter.Auth.FillInterval, // 添加的时间间隔
+			Capacity:     global.AppSetting.Limiter.Auth.Capacity,     // 令牌桶容量
+			Quantum:      global.AppSetting.Limiter.Auth.Quantum,      // 每次添加令牌
+		},
+	)
 	return nil
 }
 
@@ -158,6 +184,14 @@ func setupTracer() error {
 // @in header
 // @name Authorization
 func main() {
+	// 使用 ldflags传递
+	if isVersion {
+		fmt.Printf("build_time:%s\n", buildTime)
+		fmt.Printf("build_version:%s\n", buildVersion)
+		fmt.Printf("git_commit_id:%s\n", gitCommitId)
+		fmt.Printf("go_version:%s\n", goVersion)
+	}
+
 	router := routers.NewRouter()
 	// 不使用 run 启动，自定义配置服务参数
 	// https://blog.csdn.net/yanyuan_smartisan/article/details/113357813

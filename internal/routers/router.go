@@ -3,28 +3,17 @@ package routers
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/middleware"
 	"github.com/aloysZy/gin_web/internal/routers/api"
 	v1 "github.com/aloysZy/gin_web/internal/routers/api/v1"
-	"github.com/aloysZy/gin_web/pkg/limiter"
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/aloysZy/gin_web/docs" // 千万不要忘了导入把你上一步生成的docs
 	gs "github.com/swaggo/gin-swagger"
 	// "github.com/swaggo/gin-swagger/swaggerFiles" //这个项目被下面的替换了
 	"github.com/swaggo/files"
-)
-
-var methodLimiters = limiter.NewMethodLimiter().AddBuckets(
-	limiter.LimiterBucketRule{
-		Key:          "/auth",     // 限流的接口
-		FillInterval: time.Second, // 添加的时间间隔
-		Capacity:     1,           // 令牌桶容量
-		Quantum:      1,           // 每次添加令牌
-	},
 )
 
 // NewRouter 初始化路由
@@ -37,8 +26,11 @@ func NewRouter() *gin.Engine {
 	if global.ServerSetting.RunMode != "release" {
 		r.Use(gin.Logger())
 	}
-	r.Use(middleware.GinLogger(), middleware.GinRecovery(), middleware.ContextTimeout(time.Nanosecond), middleware.Translations())
-	r.Use(middleware.RateLimiter(methodLimiters))
+	r.Use(middleware.ContextTimeout(global.AppSetting.ContextTimeout.ContextTimeout))
+	r.Use(middleware.RateLimiter(global.AuthMethodLimiters))
+	r.Use(middleware.GinLogger(),
+		middleware.GinRecovery(),
+		middleware.Translations())
 	r.Use(middleware.Tracing()) // 要在所有路由注册之前使用
 	// swagger 路由
 	r.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
