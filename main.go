@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -84,16 +83,16 @@ func setupSetting() error {
 	if err := newSetting.ReadSection("Database", &global.DatabaseSetting); err != nil {
 		return err
 	}
-	if err := newSetting.ReadSection("JWT", &global.JWTSetting); err != nil {
-		return err
-	}
-	if err := newSetting.ReadSection("Email", &global.EmailSetting); err != nil {
-		return err
-	}
-	// 默认是纳秒，将传入的时间转化为秒
+	// if err := newSetting.ReadSection("JWT", &global.JWTSetting); err != nil {
+	// 	return err
+	// }
+	// if err := newSetting.ReadSection("Email", &global.EmailSetting); err != nil {
+	// 	return err
+	// }
+	// 默认是但我纳秒，将传入的时间转化为秒
 	global.ServerSetting.ReadTimeout *= time.Second
 	global.ServerSetting.WriteTimeout *= time.Second
-	global.JWTSetting.Expire *= time.Second
+	global.AppSetting.JWT.Expire *= time.Second
 
 	// 要是设置了 port 参数，那么在最后的时候，将解析后的配置参数，设置为传入的参数
 	if port != "" {
@@ -134,10 +133,11 @@ func setupSonyFlake() error {
 
 // setupEmail 初始化邮件
 func setupEmail() error {
-	global.EmailEngine = setting.NewEmail(global.EmailSetting)
+	global.EmailEngine = setting.NewEmail(global.AppSetting.Email)
 	return nil
 }
 
+// 初始化路由追踪
 func setupTracer() error {
 	jaegerTracer, _, err := setting.NewJaegerTracer(
 		"gin_web",
@@ -158,8 +158,6 @@ func setupTracer() error {
 // @in header
 // @name Authorization
 func main() {
-	fmt.Printf("global.ServerSetting:%#v\nglobal.AppSeting:%#v\nglobal.DatabaseSetting.Mysql:%#v\nglobal.JWTSetting:%#v\nglobal.EmailSetting:%#v\n", global.ServerSetting, global.AppSetting, global.DatabaseSetting.Mysql, global.JWTSetting, global.EmailSetting)
-
 	router := routers.NewRouter()
 	// 不使用 run 启动，自定义配置服务参数
 	// https://blog.csdn.net/yanyuan_smartisan/article/details/113357813

@@ -31,7 +31,7 @@ func NewMysqlDBEngine(mysqlDatabaseSetting *setting.MysqlSettingS) (*gorm.DB, er
 	}
 
 	// 根据日志级别来设置日志详情
-	if global.AppSetting.Level == "debug" {
+	if global.AppSetting.Log.Level == "debug" {
 		// Gorm 建立了对 Logger 的支持，默认模式只会在错误发生的时候打印日志
 		// db.LogMode(false) 关闭 Logger, 不再展示任何日志，即使是错误日志
 		db.LogMode(true) // 开启 Logger, 以展示详细的日志
@@ -55,6 +55,7 @@ func NewMysqlDBEngine(mysqlDatabaseSetting *setting.MysqlSettingS) (*gorm.DB, er
 	// maxIdleTime 空闲连接最大存活时间
 	db.DB().SetMaxIdleConns(mysqlDatabaseSetting.MaxIdleConns)
 	db.DB().SetMaxOpenConns(mysqlDatabaseSetting.MaxOpenConns)
+	// sql追踪回调
 	otgorm.AddGormCallbacks(db)
 	return db, nil
 }

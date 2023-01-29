@@ -18,22 +18,58 @@ type ServerSettingS struct {
 
 // AppSettingS 应用配置
 type AppSettingS struct {
+	Log         *LogSettingS
+	Page        *PageSettings
+	UploadImage *UploadImageSettings
+	JWT         *JWTSettingS
+	Email       *EmailSettingS
+}
+
+type LogSettingS struct {
 	// Model string  #和RunMode设置为一个级别吧
-	Level                string // 日志级别 记录和显示的日志信息级别
-	LogSavePath          string
-	LogFileName          string
-	LogFileExt           string
+	Level       string // 日志级别 记录和显示的日志信息级别
+	LogSavePath string
+	LogFileName string
+	LogFileExt  string
+	MaxSize     int
+	MaxBackups  int
+	MaxAge      int
+	LocalTime   bool
+	Compress    bool
+}
+
+type PageSettings struct {
+	DefaultPageSize int
+	MaxPageSize     int
+}
+
+type UploadImageSettings struct {
+	UploadImageMaxSize   int
 	UploadSavePath       string
 	UploadServerUrl      string
-	UploadImageMaxSize   int
-	MaxSize              int
-	MaxBackups           int
-	MaxAge               int
-	DefaultPageSize      int
-	MaxPageSize          int
-	LocalTime            bool
-	Compress             bool
 	UploadImageAllowExts []string
+}
+
+type JWTSettingS struct {
+	Secret string
+	Issuer string
+	Expire time.Duration
+}
+
+type EmailSettingS struct {
+	Host     string
+	Port     int
+	UserName string
+	Password string
+	IsSSL    bool
+	From     string
+	To       []string
+}
+
+// DatabaseSettingS 数据库配置
+type DatabaseSettingS struct {
+	Mysql *MysqlSettingS
+	Redis *RedisSettingS
 }
 
 // MysqlSettingS MySQL 配置
@@ -51,29 +87,7 @@ type MysqlSettingS struct {
 	MaxOpenConns int
 }
 
-type JWTSettingS struct {
-	Secret string
-	Issuer string
-	Expire time.Duration
-}
-
 type RedisSettingS struct {
 	Host string
 	Port string
-}
-
-// DatabaseSettingS 数据库配置
-type DatabaseSettingS struct {
-	Mysql *MysqlSettingS
-	Redis *RedisSettingS
-}
-
-type EmailSettingS struct {
-	Host     string
-	Port     int
-	UserName string
-	Password string
-	IsSSL    bool
-	From     string
-	To       []string
 }

@@ -1,4 +1,4 @@
-// Package model 数据库相关模型
+// Package model 数据库相关模型，整合数据，调用 dao
 package model
 
 import (

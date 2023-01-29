@@ -22,10 +22,10 @@ func GetPageSize(c *gin.Context) int {
 	// pageSize := convert.StrTo(c.Query("page_size")).MustInt()
 	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 	if pageSize <= 0 {
-		return global.AppSetting.DefaultPageSize
+		return global.AppSetting.Page.DefaultPageSize
 	}
-	if pageSize > global.AppSetting.MaxPageSize {
-		return global.AppSetting.MaxPageSize
+	if pageSize > global.AppSetting.Page.MaxPageSize {
+		return global.AppSetting.Page.MaxPageSize
 	}
 	return pageSize
 }

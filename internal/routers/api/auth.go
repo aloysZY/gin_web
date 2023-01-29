@@ -5,6 +5,7 @@ import (
 	"github.com/aloysZy/gin_web/internal/service"
 	"github.com/aloysZy/gin_web/pkg/app"
 	"github.com/aloysZy/gin_web/pkg/errcode"
+	"github.com/aloysZy/gin_web/pkg/jwt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -61,7 +62,7 @@ func (a *Auth) Auth(c *gin.Context) {
 		response.ToErrorResponse(errcode.UnauthorizedAuthNotExist)
 		return
 	}
-	token, err := app.GenerateToken(param.UserId)
+	token, err := jwt.GenerateToken(param.UserId)
 	if err != nil {
 		response.ToErrorResponse(errcode.UnauthorizedTokenGenerate)
 		return

@@ -1,4 +1,4 @@
-package app
+package jwt
 
 import (
 	"time"
@@ -16,13 +16,13 @@ type Claims struct {
 
 // GetJWTSecret 获取配置文件秘钥
 func GetJWTSecret() []byte {
-	return []byte(global.JWTSetting.Secret)
+	return []byte(global.AppSetting.JWT.Secret)
 }
 
 // GenerateToken 获取token，最好还是密码验证后进行 token
 func GenerateToken(userId uint64) (string, error) {
 	nowTime := time.Now()
-	expireTime := nowTime.Add(global.JWTSetting.Expire)
+	expireTime := nowTime.Add(global.AppSetting.JWT.Expire)
 	// 创建一个我们自己的声明
 	claims := Claims{
 		// util.EncodeMD5(authId), 额外做了一层加密，因为获取 token，这段信息是可以直接被解密的，不需要知道盐，账号密码存进去就失败了
@@ -32,7 +32,7 @@ func GenerateToken(userId uint64) (string, error) {
 		UserId: userId,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expireTime),
-			Issuer:    global.JWTSetting.Issuer,
+			Issuer:    global.AppSetting.JWT.Issuer,
 		},
 	}
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims) // SigningMethodHS256 加密的算法，还有 384 和 512

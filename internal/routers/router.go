@@ -64,7 +64,7 @@ func NewRouter() *gin.Engine {
 		// apiV1.PATCH("/tags/:id/state", tag.Update) // 更新部分；这个就是改变标签是否可用和PUT重复了
 
 		apiV1.POST("/upload/file", upload.UploadFile)
-		apiV1.StaticFS("/static", http.Dir(global.AppSetting.UploadSavePath))
+		apiV1.StaticFS("/static", http.Dir(global.AppSetting.UploadImage.UploadSavePath))
 
 		apiV1.POST("/articles")            // 创建
 		apiV1.GET("/articles")             // 获取

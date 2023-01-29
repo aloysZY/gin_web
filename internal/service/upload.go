@@ -47,6 +47,6 @@ func (svc *Service) UploadFile(fileType upload.FileType, fileHeader *multipart.F
 		return nil, err
 	}
 
-	accessUrl := global.AppSetting.UploadServerUrl + "/" + fileName
+	accessUrl := global.AppSetting.UploadImage.UploadServerUrl + "/" + fileName
 	return &FileInfo{Name: fileName, AccessUrl: accessUrl}, nil
 }

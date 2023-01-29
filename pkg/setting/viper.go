@@ -3,14 +3,18 @@ package setting
 
 // viper 初始化
 import (
+	"fmt"
 	"strings"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
 
 type Setting struct {
 	vp *viper.Viper
 }
+
+var sections = make(map[string]any)
 
 // NewSetting 初始化配置文件
 func NewSetting(configs ...string) (*Setting, error) {
@@ -35,7 +39,11 @@ func NewSetting(configs ...string) (*Setting, error) {
 	if err := vp.ReadInConfig(); err != nil {
 		return nil, err
 	}
-	return &Setting{vp}, nil
+	s := &Setting{vp}
+	// 热更新配置，这个项目启动初始化需要的参数是修改后没有效果的
+	// 目前我尝试上传文件列表中的元素修改是可以的，端口和数据库修改没效果
+	s.WatchSettingChange()
+	return s, nil
 }
 
 // ReadSection 序列化到结构体
@@ -43,5 +51,31 @@ func (s *Setting) ReadSection(k string, v interface{}) error {
 	if err := s.vp.UnmarshalKey(k, v); err != nil {
 		return err
 	}
+	// 配置文件读取后缓存
+	if _, ok := sections[k]; !ok {
+		sections[k] = v
+	}
 	return nil
+}
+
+// ReloadAllSection 从新读取配置文件
+func (s *Setting) ReloadAllSection() error {
+	for k, v := range sections {
+		if err := s.ReadSection(k, v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// WatchSettingChange 监听读取配置文件
+func (s *Setting) WatchSettingChange() {
+	go func() {
+		s.vp.WatchConfig() // 监听配置文件
+		// 为Viper提供一个回调函数，以便在每次发生更改时运行
+		s.vp.OnConfigChange(func(in fsnotify.Event) {
+			fmt.Println("Config file changed:", in.Name)
+			_ = s.ReloadAllSection()
+		})
+	}()
 }

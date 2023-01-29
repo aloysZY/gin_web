@@ -49,7 +49,7 @@ func GinRecovery() gin.HandlerFunc {
 					zap.String("stack", string(debug.Stack())))
 				// 发送邮件
 				err := global.EmailEngine.SendMail(
-					global.EmailSetting.To,
+					global.AppSetting.Email.To,
 					fmt.Sprintf("异常抛出，发生时间: %d", time.Now().Unix()),
 					fmt.Sprintf("错误信息: %v", err),
 				)

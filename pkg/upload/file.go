@@ -33,7 +33,7 @@ func GetFileExt(name string) string {
 
 // GetSavePath 文件保存路径
 func GetSavePath() string {
-	return global.AppSetting.UploadSavePath
+	return global.AppSetting.UploadImage.UploadSavePath
 }
 
 // CheckContainExt 判断后缀是否符合要求
@@ -43,7 +43,7 @@ func CheckContainExt(t FileType, name string) bool {
 	switch t {
 	// 根据上传的文件类型来判断后缀，要这两个匹配
 	case TypeImage:
-		for _, allowExt := range global.AppSetting.UploadImageAllowExts {
+		for _, allowExt := range global.AppSetting.UploadImage.UploadImageAllowExts {
 			if strings.ToUpper(allowExt) == ext {
 				return true
 			}
@@ -61,16 +61,16 @@ func CheckMaxSize(t FileType, f *multipart.FileHeader) bool {
 	size := int(f.Size)
 	switch t {
 	case TypeImage:
-		if size >= global.AppSetting.UploadImageMaxSize*1024*1024 {
+		if size >= global.AppSetting.UploadImage.UploadImageMaxSize*1024*1024 {
 			return true
 		}
 	}
 	return false
 }
 
+// CheckSavePath 检查保存路径
 func CheckSavePath(dst string) bool {
 	_, err := os.Stat(dst)
-
 	return os.IsNotExist(err)
 }
 
@@ -80,15 +80,17 @@ func CreateSavePath(dst string, perm os.FileMode) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
 func CheckPermission(dst string) bool {
+	// https://blog.csdn.net/wohu1104/article/details/106433529
+	// 获取文件的描述
 	_, err := os.Stat(dst)
 	return os.IsPermission(err)
 }
 
+// SaveFile 保存文件
 func SaveFile(file *multipart.FileHeader, dst string) error {
 	src, err := file.Open()
 	if err != nil {

@@ -7,20 +7,23 @@ import (
 	"github.com/opentracing/opentracing-go"
 )
 
-// 解析配置文件需要的结构体
+// 配置文件解析到结构体
 var (
 	ServerSetting   *setting.ServerSettingS
 	AppSetting      *setting.AppSettingS
 	DatabaseSetting *setting.DatabaseSettingS
-	JWTSetting      *setting.JWTSettingS
-	EmailSetting    *setting.EmailSettingS
+	// JWTSetting      *setting.JWTSettingS
+	// EmailSetting    *setting.EmailSettingS
+)
 
+// 全局变量
+var (
 	EmailEngine   *setting.Email
 	MysqlDBEngine *gorm.DB
 	Tracer        opentracing.Tracer
 )
 
-// Trans 上下文用到的常量
+// 上下文用到的常量
 const (
 	Trans   = "trans"
 	UserId  = "user_id"

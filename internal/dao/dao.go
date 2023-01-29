@@ -1,3 +1,4 @@
+// Package dao 具体数据库操作
 package dao
 
 import "github.com/jinzhu/gorm"

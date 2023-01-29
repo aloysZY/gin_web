@@ -32,6 +32,7 @@ func NewEmail(email *EmailSettingS) *Email {
 	}
 }
 
+// SendMail 发送邮件。就一个方法不放在一个单独的包里面了
 func (e *Email) SendMail(to []string, subject, body string) error {
 	m := gomail.NewMessage()
 	m.SetHeader("From", e.From)

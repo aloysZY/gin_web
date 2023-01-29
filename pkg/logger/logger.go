@@ -27,7 +27,7 @@ func NewLogger() (err error) {
 	// WARNING：一个迹象表明,一些意想不到的事情发生了,或表明一些问题在不久的将来(例如。磁盘空间低”)。这个软件还能按预期工作。
 	// ERROR：更严重的问题,软件没能执行一些功能
 	// CRITICAL：一个严重的错误,这表明程序本身可能无法继续运行
-	if err = l.UnmarshalText([]byte(global.AppSetting.Level)); err != nil {
+	if err = l.UnmarshalText([]byte(global.AppSetting.Log.Level)); err != nil {
 		return
 	}
 	// 根据配置文件的是不是 release 来判断是否输出到终端
@@ -93,15 +93,15 @@ func getLogWriter() zapcore.WriteSyncer {
 	// fileName := global.AppSetting.LogSavePath + "/" + global.AppSetting.LogFileName + time.Now().Format("2006-01-02 15:04:05") + global.AppSetting.LogFileExt
 	// 测试后发现不能添加时间，不然每次调用都新生成一个文件
 	// accessFileName := global.AppSetting.LogSavePath + "/access_" + global.AppSetting.LogFileName + "_" + time.Now().Format("2006-01-02 15:04:05") + global.AppSetting.LogFileExt
-	accessFileName := global.AppSetting.LogSavePath + "/" + global.AppSetting.LogFileName + "_" + global.AppSetting.LogFileExt
+	accessFileName := global.AppSetting.Log.LogSavePath + "/" + global.AppSetting.Log.LogFileName + "_" + global.AppSetting.Log.LogFileExt
 
 	lumberJackLogger := &lumberjack.Logger{
-		Filename:   accessFileName,               // 日志文件的位置
-		MaxSize:    global.AppSetting.MaxSize,    // 在进行切割之前，日志文件的最大大小（以MB为单位）
-		MaxBackups: global.AppSetting.MaxBackups, // 保留旧文件的最大个数
-		MaxAge:     global.AppSetting.MaxAge,     // 保留旧文件的最大天数，不管副本数量有多少，超过这个时间的日志都删除
-		LocalTime:  global.AppSetting.LocalTime,  // LocalTime确定时间是否用于格式化中时间戳
-		Compress:   global.AppSetting.Compress,   // Compress决定是否对存储的日志文件进行压缩，使用gzip默认情况下不执行压缩。
+		Filename:   accessFileName,                   // 日志文件的位置
+		MaxSize:    global.AppSetting.Log.MaxSize,    // 在进行切割之前，日志文件的最大大小（以MB为单位）
+		MaxBackups: global.AppSetting.Log.MaxBackups, // 保留旧文件的最大个数
+		MaxAge:     global.AppSetting.Log.MaxAge,     // 保留旧文件的最大天数，不管副本数量有多少，超过这个时间的日志都删除
+		LocalTime:  global.AppSetting.Log.LocalTime,  // LocalTime确定时间是否用于格式化中时间戳
+		Compress:   global.AppSetting.Log.Compress,   // Compress决定是否对存储的日志文件进行压缩，使用gzip默认情况下不执行压缩。
 	}
 	return zapcore.AddSync(lumberJackLogger)
 }
@@ -109,14 +109,14 @@ func getLogWriter() zapcore.WriteSyncer {
 // 错误日志单独输出
 func getLogWriterError() zapcore.WriteSyncer {
 	// fileName := global.AppSetting.LogSavePath + "/" + global.AppSetting.LogFileName + "Error" + time.Now().Format("2006-01-02 15:04:05") + global.AppSetting.LogFileExt
-	errorFileName := global.AppSetting.LogSavePath + "/error_" + global.AppSetting.LogFileName + "_" + global.AppSetting.LogFileExt
+	errorFileName := global.AppSetting.Log.LogSavePath + "/error_" + global.AppSetting.Log.LogFileName + "_" + global.AppSetting.Log.LogFileExt
 	lumberJackLogger := &lumberjack.Logger{
-		Filename:   errorFileName,                // 日志文件的位置
-		MaxSize:    global.AppSetting.MaxSize,    // 在进行切割之前，日志文件的最大大小（以MB为单位）
-		MaxBackups: global.AppSetting.MaxBackups, // 保留旧文件的最大个数
-		MaxAge:     global.AppSetting.MaxAge,     // 保留旧文件的最大天数，不管副本数量有多少，超过这个时间的日志都删除
-		LocalTime:  global.AppSetting.LocalTime,  // LocalTime确定时间是否用于格式化中时间戳
-		Compress:   global.AppSetting.Compress,   // Compress决定是否对存储的日志文件进行压缩，使用gzip默认情况下不执行压缩。
+		Filename:   errorFileName,                    // 日志文件的位置
+		MaxSize:    global.AppSetting.Log.MaxSize,    // 在进行切割之前，日志文件的最大大小（以MB为单位）
+		MaxBackups: global.AppSetting.Log.MaxBackups, // 保留旧文件的最大个数
+		MaxAge:     global.AppSetting.Log.MaxAge,     // 保留旧文件的最大天数，不管副本数量有多少，超过这个时间的日志都删除
+		LocalTime:  global.AppSetting.Log.LocalTime,  // LocalTime确定时间是否用于格式化中时间戳
+		Compress:   global.AppSetting.Log.Compress,   // Compress决定是否对存储的日志文件进行压缩，使用gzip默认情况下不执行压缩。
 	}
 	return zapcore.AddSync(lumberJackLogger)
 }
