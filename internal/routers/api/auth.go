@@ -19,7 +19,7 @@ func NewAuth() Auth { return Auth{} }
 // @Tags 用户
 // @Produce  json
 // @Param object body params.AuthRequest true "注册用户"
-// @Success 200 {object} app.Swagger "成功"
+// @Success 200 {object} third_party.Swagger "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /signup [post]
@@ -45,7 +45,7 @@ func (a *Auth) SignUp(c *gin.Context) {
 // @Tags 用户
 // @Produce  json
 // @Param object body params.AuthRequest true "用户登录"
-// @Success 200 {object} app.SwaggerAuth "成功"
+// @Success 200 {object} third_party.SwaggerAuth "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /auth [post]

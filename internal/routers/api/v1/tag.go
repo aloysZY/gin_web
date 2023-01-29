@@ -42,7 +42,7 @@ func NewTag() Tag { return Tag{} }
 // @Param page query int false "页码"
 // @Param page_size query int false "每页数量"
 // @Security ApiKeyAuth
-// @Success 200 {object} app.SwaggerTage "成功"
+// @Success 200 {object} third_party.SwaggerTage "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/tags [get]
@@ -90,7 +90,7 @@ func (t Tag) List(c *gin.Context) {
 // @Produce  json
 // @Param object body params.CreateTagRequest true "创建标签"
 // @Security ApiKeyAuth
-// @Success 200 {object} app.Swagger "成功"
+// @Success 200 {object} third_party.Swagger "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/tags [post]
@@ -129,7 +129,7 @@ func (t Tag) Create(c *gin.Context) {
 // @Param id path uint64 true "标签ID"
 // @Param object body params.UpdateTagRequest true "更新标签"
 // @Security ApiKeyAuth
-// @Success 200 {object} app.Swagger "成功"
+// @Success 200 {object} third_party.Swagger "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/tags/{id} [put]
@@ -170,7 +170,7 @@ func (t Tag) Update(c *gin.Context) {
 // @Produce  json
 // @Param id path uint64 true "标签ID"
 // @Security ApiKeyAuth
-// @Success 200 {object} app.Swagger "成功"
+// @Success 200 {object} third_party.Swagger "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/tags/{id} [delete]
