@@ -14,5 +14,12 @@ var (
 	ErrorUpdateArticleFail = NewError(20020004, "更新文章失败")
 	ErrorDeleteArticleFail = NewError(20020005, "删除文章失败")
 
-	ErrorUploadFileFail = NewError(20030001, "上传文件失败")
+	ErrorFileUpload             = NewError(20030001, "上传文件失败")
+	ErrorFileSuffixNotSupported = NewError(20030002, "文件后缀不符合类型要求")
+	ErrorFileExceededMaximum    = NewError(20030003, "超过文件大小限制")
+	ErrorFileCreateDirector     = NewError(20030004, "创建文件保存路径失败")
+	ErrorFileNotPermissions     = NewError(20030005, "保存文件权限不足")
+
+	ErrorSonyFlakeNotInit = NewError(20040001, "雪花算法没有初始化")
+	ErrorNoDataModified   = NewError(20040002, "没有可修改数据")
 )

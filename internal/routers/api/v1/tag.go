@@ -4,7 +4,7 @@ package v1
 import (
 	"strconv"
 
-	"github.com/aloysZy/gin_web/internal/routers/api/v1/params"
+	"github.com/aloysZy/gin_web/internal/routers/api/params"
 	"github.com/aloysZy/gin_web/internal/service"
 	"github.com/aloysZy/gin_web/pkg/app"
 	"github.com/aloysZy/gin_web/pkg/errcode"
@@ -50,9 +50,8 @@ func (t Tag) List(c *gin.Context) {
 	response := app.NewResponse(c)
 	// 1.解析参数
 	// params.ListTagRequest{} 有一个问题，初始化后，没传入state参数，解析后 state 是 1，有问题
-	// param := params.ListTagRequest{} // state 怎么解析后就是 1 了？
-	// 显示赋值吧，还没找到原因
-	param := params.ListTagRequest{State: 1}
+	param := params.ListTagRequest{} // state 怎么解析后就是 1 了？、
+	// State uint8  `form:"state,default=1"  是这个default的问题，只有 get 请求才生效
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
@@ -97,8 +96,8 @@ func (t Tag) List(c *gin.Context) {
 func (t Tag) Create(c *gin.Context) {
 	response := app.NewResponse(c)
 	// 1. 解析参数
-	// params.CreateTagRequest{} 也有一个问题，没传入 state，解析后 state 是 0，这是正常的
-	param := params.CreateTagRequest{State: 1}
+	param := params.CreateTagRequest{} // 也有一个问题，没传入 state，解析后 state 是 0，这是正常的
+	// param := params.CreateTagRequest{State: 1}
 	userID, err := service.GetUserID(c)
 	if err != nil {
 		response.ToErrorResponse(errcode.NotLogin)
@@ -159,7 +158,12 @@ func (t Tag) Update(c *gin.Context) {
 		return
 	}
 	svc := service.New(c.Request.Context())
-	if err := svc.UpdateTag(&param); err != nil {
+	err = svc.UpdateTag(&param)
+	if err != nil {
+		if err == errcode.ErrorNoDataModified {
+			response.ToErrorResponse(errcode.ErrorNoDataModified)
+			return
+		}
 		response.ToErrorResponse(errcode.ErrorUpdateTagFail)
 		return
 	}

@@ -1,11 +1,9 @@
 package service
 
 import (
-	"errors"
-	"fmt"
-
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/routers/api/params"
+	"github.com/aloysZy/gin_web/pkg/errcode"
 	"github.com/aloysZy/gin_web/pkg/scrypt"
 	"github.com/aloysZy/gin_web/pkg/setting"
 	"github.com/gin-gonic/gin"
@@ -17,7 +15,7 @@ func (svc *Service) CreateAuth(param *params.AuthRequest) error {
 	// 雪花算法生成 ID
 	id, err := setting.GetID()
 	if err != nil {
-		if err == fmt.Errorf("newSonyFlake not initialized") {
+		if err == errcode.ErrorSonyFlakeNotInit {
 			zap.L().Error("SonyFlake not initialized error: ", zap.Error(err))
 			return err
 		}
@@ -56,19 +54,21 @@ func (svc *Service) CheckAuth(param *params.AuthRequest) error {
 		param.UserId = auth.UserId // 有多重方法可以实现这个值传出去，这里比较方便
 		return nil
 	}
-	return errors.New("auth info does not exist")
+	// return errors.New("auth info does not exist")
+	return errcode.NotLogin
 }
 
+// GetUserID 获取当前用户登录 ID
 func GetUserID(c *gin.Context) (uint64, error) {
 	_userID, ok := c.Get(global.UserId)
 	if !ok {
 		zap.L().Error("GetUserID not found user")
-		return 0, fmt.Errorf("GetUserID not found user")
+		return 0, errcode.UnauthorizedAuthNotExist
 	}
-	userID, ok := _userID.(uint64)
-	if !ok {
-		zap.L().Error("GetUserID not found user")
-		return 0, fmt.Errorf("GetUserID not found user")
-	}
+	userID, _ := _userID.(uint64)
+	// if !ok {
+	// 	zap.L().Error("GetUserID not found user")
+	// 	return 0, errors.New("GetUserID not found user")
+	// }
 	return userID, nil
 }

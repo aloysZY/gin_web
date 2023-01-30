@@ -3,14 +3,11 @@
 package service
 
 import (
-	"fmt"
-
 	"github.com/aloysZy/gin_web/internal/model"
-	"github.com/aloysZy/gin_web/internal/routers/api/v1/params"
+	"github.com/aloysZy/gin_web/internal/routers/api/params"
 	"github.com/aloysZy/gin_web/pkg/app"
 	"github.com/aloysZy/gin_web/pkg/errcode"
 	"github.com/aloysZy/gin_web/pkg/setting"
-
 	"go.uber.org/zap"
 )
 
@@ -19,7 +16,7 @@ func (svc *Service) CreateTag(param *params.CreateTagRequest) error {
 	// 创建tagId
 	id, err := setting.GetID()
 	if err != nil {
-		if err == fmt.Errorf("newSonyFlake not initialized") {
+		if err == errcode.ErrorSonyFlakeNotInit {
 			zap.L().Error("SonyFlake not initialized error: ", zap.Error(err))
 			return err
 		}
@@ -32,7 +29,6 @@ func (svc *Service) CreateTag(param *params.CreateTagRequest) error {
 	count, err := svc.dao.GetTag(param.Name, param.State)
 	if count != 0 {
 		err = errcode.ErrorTagExists
-		// err = errors.New("TagName exists")
 		zap.L().Error("svc.dao.GetTag failed:", zap.Error(err))
 		return err
 	}
@@ -68,6 +64,10 @@ func (svc *Service) UpdateTag(param *params.UpdateTagRequest) error {
 	// 修改的时候不能修改标签名称，可以重新创建
 	err := svc.dao.UpdateTag(param.TagId, param.ModifiedBy, param.State)
 	if err != nil {
+		if err == errcode.ErrorNoDataModified {
+			zap.L().Info("svc.dao.UpdateTag:", zap.Error(err))
+			return err
+		}
 		zap.L().Error("svc.dao.UpdateTag error: ", zap.Error(err))
 		return err
 	}

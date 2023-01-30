@@ -11,7 +11,7 @@ Server:
 App:
   #这个有时间再看看，目前不生效好像
   ContextTimeout:
-    ContextTimeout: 1 #这里单位也是秒
+    ContextTimeout: 60 #这里单位也是秒
   Log:
     #  Model: dev
     Level: debug  #日志输出级别

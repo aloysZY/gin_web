@@ -43,7 +43,7 @@ func (u Upload) UploadFile(c *gin.Context) {
 		// fileInfo, err := svc.UploadFile(upload.FileType(fileType), file, fileHeader)
 		fileInfo, err := svc.UploadFile(upload.FileType(fileType), fileHeader)
 		if err != nil {
-			response.ToErrorResponse(errcode.ErrorUploadFileFail.WithDetails(err.Error()))
+			response.ToErrorResponse(errcode.ErrorFileUpload.WithDetails(err.Error()))
 			return
 		}
 		AccessUrls = append(AccessUrls, fileInfo.AccessUrl)

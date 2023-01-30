@@ -26,43 +26,43 @@ func NewRouter() *gin.Engine {
 	if global.ServerSetting.RunMode != "release" {
 		r.Use(gin.Logger())
 	}
-	r.Use(middleware.ContextTimeout(global.AppSetting.ContextTimeout.ContextTimeout))
-	r.Use(middleware.RateLimiter(global.AuthMethodLimiters))
-	r.Use(middleware.GinLogger(),
-		middleware.GinRecovery(),
-		middleware.Translations())
-	r.Use(middleware.Tracing()) // 要在所有路由注册之前使用
+	r.Use(middleware.ContextTimeout(global.AppSetting.ContextTimeout.ContextTimeout)) // 统一超时中间件
+	r.Use(middleware.RateLimiter(global.AuthMethodLimiters))                          // 令牌桶
+	r.Use(middleware.GinLogger())                                                     // 日志中间件
+	r.Use(middleware.GinRecovery())                                                   // recovery中间件
+	r.Use(middleware.Translations())                                                  // 翻译器
+	r.Use(middleware.Tracing())                                                       // 要在s所有路由注册之前使用 路由追踪
 	// swagger 路由
 	r.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
+	// 初始化，以后 api 版本变更，直接更换初始化的方法就行了
+	tag := v1.NewTag()
+	upload := v1.NewUpload()
+	atricle := v1.NewArticle()
 	// 鉴权路由
 	auth := api.NewAuth()
 	r.POST("/signup", auth.SignUp)
 	r.POST("/auth", auth.Auth)
-
-	// 初始化，以后 api 版本变更，直接更换初始化的方法就行了
-	tag := v1.NewTag()
-	// upload :=v1.NewUpload()
-	upload := v1.NewUpload()
 	// 创建路由组
 	apiV1 := r.Group("/api/v1")
-
 	apiV1.Use(middleware.Auth())
 	{
+		apiV1.POST("/upload/file", upload.UploadFile)
+		apiV1.StaticFS("/static", http.Dir(global.AppSetting.UploadImage.UploadSavePath))
 		// 设计路由的时候，使用不同的方法进行不同的操作
-		apiV1.POST("/tags", tag.Create)       // 创建
-		apiV1.GET("/tags", tag.List)          // 获取
+		apiV1.POST("/tags", tag.Create) // 创建
+		apiV1.GET("/tags", tag.List)    // 获取标签列表
+		// apiV1.GET("/tags", tag.Get)           // 获取单个标签
+		// apiV1.GET("/tags", tag.GetById)       // 根据标签 ID 查询标签
 		apiV1.DELETE("/tags/:id", tag.Delete) // 删除
 		apiV1.PUT("/tags/:id", tag.Update)    // 全量更新
 		// apiV1.PATCH("/tags/:id/state", tag.Update) // 更新部分；这个就是改变标签是否可用和PUT重复了
-
-		apiV1.POST("/upload/file", upload.UploadFile)
-		apiV1.StaticFS("/static", http.Dir(global.AppSetting.UploadImage.UploadSavePath))
-
-		apiV1.POST("/articles")            // 创建
-		apiV1.GET("/articles")             // 获取
-		apiV1.DELETE("/articles/:id")      // 删除
-		apiV1.PUT("/articles/:id")         // 全量更新
-		apiV1.PATCH("/articles/:id/state") // 更新部分
+		apiV1.POST("/articles", atricle.Create) // 创建
+		apiV1.GET("/articles", atricle.List)    // 获取多个文章
+		// apiV1.GET("/articles", atricle.Get)           // 获取单个文章
+		// apiV1.GET("/articles", atricle.GetById)       // 根据 ID 获取文章
+		apiV1.DELETE("/articles/:id", atricle.Delete) // 删除
+		apiV1.PUT("/articles/:id", atricle.Update)    // 全量更新
+		// apiV1.PATCH("/articles/:id/state") // 更新部分
 
 	}
 	// 没有路由匹配

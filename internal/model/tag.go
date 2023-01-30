@@ -2,6 +2,7 @@
 package model
 
 import (
+	"github.com/aloysZy/gin_web/pkg/errcode"
 	"github.com/jinzhu/gorm"
 )
 
@@ -59,13 +60,14 @@ func (t Tag) List(db *gorm.DB, pageOffset, pageSize int) ([]*Tag, error) {
 }
 
 func (t Tag) Update(db *gorm.DB, values any) error {
-	// 当修改的时候，数据库没有对于的数据tag_id，就会返回修改 0 行，但是没有错误，应该要提示数据不存在的，其实无所谓，应为是前端传入的 id，恶意修改数据库本身不存在，也不会修改
-	// db = db.Model(&t).Where("tag_id = ? AND is_del = ?", t.TagID, 0).Update(values)
-	// if db.RowsAffected == 0 {
-	// 	err := errors.New("为进行数据修改")
-	// 	return err
-	// }
-	return db.Model(&t).Where("tag_id = ? AND is_del = ?", t.TagID, 0).Update(values).Error
+	// 当修改的时候，数据库没有对于的数据tag_id，就会返回修改 0 行
+	db = db.Model(&t).Where("tag_id = ? AND is_del = ?", t.TagID, 0).Update(values)
+	if db.RowsAffected == 0 {
+		return errcode.ErrorNoDataModified
+	}
+	return db.Error
+	// return db.Model(&t).Where("tag_id = ? AND is_del = ?", t.TagID, 0).Update(values).Error
+
 }
 
 func (t Tag) Delete(db *gorm.DB) error {

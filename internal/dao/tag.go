@@ -61,6 +61,7 @@ func (d *Dao) UpdateTag(id, modifiedBy uint64, state uint8) error {
 	// 	Model: &model.Model{ID: id, ModifiedBy: modifiedBy},
 	// }
 	// tag := model.Tag{Model: &model.Model{ID: id}}
+	// 这步骤修改，是因为直接使用 tag 传入的时候，字段名称是 默认值的时候 gorm 不能识别，作为参数传入，就没问题了
 	tag := model.Tag{TagID: id}
 	value := map[string]any{
 		// 这样写字段名称要和数据库对应了，应为没有解析了

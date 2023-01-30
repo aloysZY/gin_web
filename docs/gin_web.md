@@ -62,3 +62,6 @@ dao 需要的参数在创建数据库后根据数据库 model字段来定义的
 
 ![image-20230120122611188](/Users/aloys/Documents/Go/code/src/github.com/aloysZy/gin_web/docs/gin_web.assets/image-20230120122611188.png)
 
+# gin form
+
+![image-20230130003328099](/Users/aloys/Documents/Go/code/src/github.com/aloysZy/gin_web/docs/gin_web.assets/image-20230130003328099.png)

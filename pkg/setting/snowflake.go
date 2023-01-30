@@ -2,9 +2,9 @@
 package setting
 
 import (
-	"errors"
 	"time"
 
+	"github.com/aloysZy/gin_web/pkg/errcode"
 	"github.com/sony/sonyflake"
 )
 
@@ -30,12 +30,12 @@ func NewSonyFlake(machineId uint16, startTime string) (err error) {
 	return
 }
 
-// GetID 返回生成的id值
+// GetID 返回生成的id值 雪花算法
 func GetID() (id uint64, err error) {
 	// 如果没有初始化就报这个错误
 	if sonyFlake == nil {
 		// err = fmt.Errorf("newSonyFlake not initialized")
-		return 0, errors.New("newSonyFlake not initialized")
+		return 0, errcode.ErrorSonyFlakeNotInit
 	}
 	id, err = sonyFlake.NextID()
 	return
