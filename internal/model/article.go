@@ -2,7 +2,7 @@ package model
 
 import "github.com/jinzhu/gorm"
 
-// Article 文章结构体
+// Article 文章结构体，操作数据库
 type Article struct {
 	State         uint8          `json:"state"`      // 状态  1 正常 0为禁用
 	ArticleId     uint64         `json:"article_id"` // 设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真
@@ -17,6 +17,11 @@ type Article struct {
 
 func (a Article) TableName() string { return "web_article" }
 
+// Create 创建文章
 func (a Article) Create(db *gorm.DB) error {
-	return db.Create(&a).Error
+	if err := db.Create(&a).Error; err != nil {
+		db.Rollback()
+		return err
+	}
+	return nil
 }

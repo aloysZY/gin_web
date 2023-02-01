@@ -10,7 +10,7 @@ import (
 
 func (d *Dao) GetTag(name string, state uint8) (int, error) {
 	tag := model.Tag{Name: name, State: state}
-	return tag.Count(d.engine)
+	return tag.Count(d.Engine)
 }
 
 // CreateTag 创建标签需要的数据整合
@@ -25,7 +25,7 @@ func (d *Dao) CreateTag(id, createdBy uint64, name string, state uint8) error {
 		Model: &model.Model{CreatedBy: createdBy},
 	}
 	// 调用类型方法
-	return tag.Create(d.engine)
+	return tag.Create(d.Engine)
 }
 
 // CountTag 根据传入参数统计返回值数量
@@ -34,7 +34,7 @@ func (d *Dao) CountTag(name string, state uint8) (int, error) {
 		Name:  name,
 		State: state,
 	}
-	return tag.Count(d.engine)
+	return tag.Count(d.Engine)
 }
 
 // GetTagList 根据传入参数，返回查询结果
@@ -44,7 +44,7 @@ func (d *Dao) GetTagList(name string, state uint8, page, pageSize int) ([]*model
 		Name:  name,
 	}
 	pageOffset := app.GetPageOffset(page, pageSize)
-	listTag, err := tag.List(d.engine, pageOffset, pageSize)
+	listTag, err := tag.List(d.Engine, pageOffset, pageSize)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (d *Dao) UpdateTag(id, modifiedBy uint64, state uint8) error {
 	// if name != "" {
 	// 	value["name"] = name
 	// }
-	return tag.Update(d.engine, value)
+	return tag.Update(d.Engine, value)
 }
 
 func (d *Dao) DeleteTag(id, modifiedBy uint64) error {
@@ -80,5 +80,5 @@ func (d *Dao) DeleteTag(id, modifiedBy uint64) error {
 		TagID: id,
 		Model: &model.Model{CreatedBy: modifiedBy},
 	}
-	return tag.Delete(d.engine)
+	return tag.Delete(d.Engine)
 }

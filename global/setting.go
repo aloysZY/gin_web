@@ -16,7 +16,8 @@ var (
 
 // 上下文用到的常量
 const (
-	Trans   = "trans"
+	// Trans   = "trans"
+
 	UserId  = "user_id"
 	TraceId = "X-Trace-ID"
 	SpanId  = "X-Span-ID"

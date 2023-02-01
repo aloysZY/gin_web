@@ -30,6 +30,7 @@ func (e *Error) ErrorF() string {
 	return fmt.Sprintf("错误码：%d, 错误信息:：%s", e.Code(), e.Msg())
 }
 
+// 实现了 error 方法，在 return error的时候可以直接使用这里面的错误类型
 func (e *Error) Error() string {
 	return e.Msg()
 }

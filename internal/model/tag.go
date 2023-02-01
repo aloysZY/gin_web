@@ -2,9 +2,13 @@
 package model
 
 import (
+	"sync"
+
 	"github.com/aloysZy/gin_web/pkg/errcode"
 	"github.com/jinzhu/gorm"
 )
+
+var rwMutex sync.RWMutex
 
 // Tag TAG生成返回的数据
 type Tag struct {

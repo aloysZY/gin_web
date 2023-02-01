@@ -42,6 +42,7 @@ func (svc *Service) CreateTag(param *params.CreateTagRequest) error {
 	return nil
 }
 
+// CountTag 查询标签总量
 func (svc *Service) CountTag(param *params.CountTagRequest) (int, error) {
 	count, err := svc.dao.CountTag(param.Name, param.State)
 	if err != nil {
@@ -51,7 +52,8 @@ func (svc *Service) CountTag(param *params.CountTagRequest) (int, error) {
 	return count, nil
 }
 
-func (svc *Service) GetTagList(param *params.ListTagRequest, pager *app.Pager) ([]*model.Tag, error) {
+// ListTag 查询标签列表
+func (svc *Service) ListTag(param *params.ListTagRequest, pager *app.Pager) ([]*model.Tag, error) {
 	tagList, err := svc.dao.GetTagList(param.Name, param.State, pager.Page, pager.PageSize)
 	if err != nil {
 		zap.L().Error("svc.dao.GetTagList error: ", zap.Error(err))
@@ -60,6 +62,7 @@ func (svc *Service) GetTagList(param *params.ListTagRequest, pager *app.Pager) (
 	return tagList, nil
 }
 
+// UpdateTag 更新标签
 func (svc *Service) UpdateTag(param *params.UpdateTagRequest) error {
 	// 修改的时候不能修改标签名称，可以重新创建
 	err := svc.dao.UpdateTag(param.TagId, param.ModifiedBy, param.State)
@@ -74,6 +77,7 @@ func (svc *Service) UpdateTag(param *params.UpdateTagRequest) error {
 	return nil
 }
 
+// DeleteTag 删除标签
 func (svc *Service) DeleteTag(param *params.DeleteTagRequest) error {
 	return svc.dao.DeleteTag(param.TagId, param.ModifiedBy)
 }

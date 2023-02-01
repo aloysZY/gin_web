@@ -43,6 +43,10 @@ func init() {
 	if err := setupLogger(); err != nil {
 		log.Fatalf("init.setupLogger err:%v", err)
 	}
+	// 添加初始化翻译器
+	if err := setupTranslation("zh"); err != nil {
+		log.Fatalf("init.setupLogger err:%v", err)
+	}
 	// 初始化 MySQL
 	if err := setupMysqlDBEngin(); err != nil {
 		log.Fatalf("init.setupMysqlDBEngin err:%v", err)
@@ -120,6 +124,14 @@ func setupSetting() error {
 // 初始化日志
 func setupLogger() error {
 	if err := logger.NewLogger(); err != nil {
+		return err
+	}
+	return nil
+}
+
+// 初始化翻译器
+func setupTranslation(locale string) error {
+	if err := setting.Translations(locale); err != nil {
 		return err
 	}
 	return nil

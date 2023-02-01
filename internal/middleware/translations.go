@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"github.com/aloysZy/gin_web/global"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/en"
@@ -12,6 +11,8 @@ import (
 	enTranslations "github.com/go-playground/validator/v10/translations/en"
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
 )
+
+// 翻译器不能作为中间件使用，并发的时候，会引发fatal error: concurrent map read and map write
 
 const (
 	ZH = "zh"
@@ -27,19 +28,24 @@ func Translations() gin.HandlerFunc {
 		locale := c.GetHeader("locale")
 		// 初始化翻译器，根据要翻译的语言
 		trans, _ := uni.GetTranslator(locale)
+		// 初始化为全局的
+		// global.Trans, _ = uni.GetTranslator(locale)
 		// 修改gin框架中的Validator引擎属性，实现自定制
 		v, ok := binding.Validator.Engine().(*validator.Validate)
 		if ok {
 			switch locale {
 			case ZH:
 				_ = zhTranslations.RegisterDefaultTranslations(v, trans)
+				break
 			case EN:
 				_ = enTranslations.RegisterDefaultTranslations(v, trans)
+				break
 			default:
 				_ = zhTranslations.RegisterDefaultTranslations(v, trans)
+				break
 			}
 			// 添加到上下文，后面接口校验的时候会进行使用
-			c.Set(global.Trans, trans)
+			c.Set("trans", trans)
 		}
 		// 继续路由
 		c.Next()

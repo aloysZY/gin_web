@@ -58,12 +58,6 @@ func (t Tag) List(c *gin.Context) {
 	}
 	// 2.业务逻辑处理
 	svc := service.New(c.Request.Context())
-	// 先查询有多少个标签
-	// 解析 URL 传入的页码和每页展示数量
-	pager := app.Pager{
-		Page:     app.GetPage(c),
-		PageSize: app.GetPageSize(c),
-	}
 	totalRows, err := svc.CountTag(&params.CountTagRequest{
 		Name:  param.Name,
 		State: param.State,
@@ -72,7 +66,13 @@ func (t Tag) List(c *gin.Context) {
 		response.ToErrorResponse(errcode.ErrorCountTagFail)
 		return
 	}
-	tagList, err := svc.GetTagList(&param, &pager)
+	// 先查询有多少个标签
+	// 解析 URL 传入的页码和每页展示数量
+	pager := app.Pager{
+		Page:     app.GetPage(c),
+		PageSize: app.GetPageSize(c),
+	}
+	tagList, err := svc.ListTag(&param, &pager)
 	if err != nil {
 		response.ToErrorResponse(errcode.ErrorGetTagListFail)
 		return

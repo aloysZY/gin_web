@@ -30,8 +30,8 @@ func NewRouter() *gin.Engine {
 	r.Use(middleware.RateLimiter(global.AuthMethodLimiters))                          // 令牌桶
 	r.Use(middleware.GinLogger())                                                     // 日志中间件
 	r.Use(middleware.GinRecovery())                                                   // recovery中间件
-	r.Use(middleware.Translations())                                                  // 翻译器
-	r.Use(middleware.Tracing())                                                       // 要在s所有路由注册之前使用 路由追踪
+	// r.Use(middleware.Translations())                                                  // 翻译器
+	r.Use(middleware.Tracing()) // 要在s所有路由注册之前使用 路由追踪
 	// swagger 路由
 	r.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
 	// 初始化，以后 api 版本变更，直接更换初始化的方法就行了

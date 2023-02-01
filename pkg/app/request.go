@@ -4,29 +4,32 @@ package app
 import (
 	"strings"
 
-	"github.com/aloysZy/gin_web/global"
+	"github.com/aloysZy/gin_web/pkg/setting"
 	"github.com/gin-gonic/gin"
-	ut "github.com/go-playground/universal-translator"
 	val "github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 )
 
+// ValidError 解析错误结构体
 type ValidError struct {
 	Key     string
 	Message string
 }
-
-type ValidErrors []*ValidError
 
 // 实现了 error 方法，如果一个类型实现了某个 interface 中的所有方法，那么编译器认为该类型实现了此 interface，认为他们是"一样"的
 func (v *ValidError) Error() string {
 	return v.Message
 }
 
+// ValidErrors 定义别名
+type ValidErrors []*ValidError
+
+// ErrorF 实现格式化输出方法
 func (v ValidErrors) ErrorF() string {
 	return strings.Join(v.Errors(), ",")
 }
 
+// Errors 循环错误，返回一个切片
 func (v ValidErrors) Errors() []string {
 	var errs []string
 	for _, err := range v {
@@ -59,12 +62,15 @@ func BindAndValid(c *gin.Context, v any) (bool, ValidErrors) {
 		if !ok {
 			return false, errs
 		}
+		// 		翻译器修改为全局的了，不安会并发不安全，测试一下
 		// 取出翻译器
-		v := c.Value(global.Trans)
+		// v := c.Value("trans")
 		// 断言翻译器类型
-		trans, _ := v.(ut.Translator)
+		// trans, _ := v.(ut.Translator)
 		// 否则进行翻译
-		for key, value := range vErrs.Translate(trans) {
+		// for key, value := range vErrs.Translate(trans) {
+
+		for key, value := range vErrs.Translate(setting.Trans) {
 			errs = append(errs, &ValidError{
 				Key:     key,
 				Message: value,

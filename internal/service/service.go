@@ -6,12 +6,14 @@ import (
 	"github.com/aloysZy/gin_web/global"
 	"github.com/aloysZy/gin_web/internal/dao"
 	otgorm "github.com/eddycjy/opentracing-gorm"
+	"github.com/jinzhu/gorm"
 )
 
 // Service 封装了上下文和 dao
 type Service struct {
-	ctx context.Context
-	dao *dao.Dao
+	ctx         context.Context
+	dao         *dao.Dao
+	transaction *gorm.DB
 }
 
 // New 初始化svc 上下文和 dao
