@@ -1,12 +1,15 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import (
+	"fmt"
+
+	"github.com/jinzhu/gorm"
+)
 
 // Article 文章结构体，操作数据库
 type Article struct {
-	State         uint8          `json:"state"`      // 状态  1 正常 0为禁用
-	ArticleId     uint64         `json:"article_id"` // 设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真
-	TagId         uint64         `json:"tagId"`
+	State         uint8          `json:"state"`           // 状态  1 正常 0为禁用
+	ArticleId     uint64         `json:"article_id"`      // 设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真
 	Title         string         `json:"name"`            // 文章标题
 	Desc          string         `json:"desc"`            // 文章简述
 	CoverImageUrl string         `json:"cover_image_url"` // 封面图片地址
@@ -24,4 +27,61 @@ func (a Article) Create(db *gorm.DB) error {
 		return err
 	}
 	return nil
+}
+
+// 根据文章标题查询所有文章,（没什么意义，应该要模糊匹配）
+/*func (a Article) ListArticleByTitle(db *gorm.DB) ([]*Article, error) {
+	var Articles []*Article
+	db = db.Where("state = ?", a.State)
+	if err := db.Where("title = ? AND is_del = ?", a.Title, 0).Order("modified_on DESC").Find(&Articles).Error; err != nil {
+		return nil, err
+	}
+	return Articles, nil
+}*/
+
+// ListArticleByTitle 根据文章标题查询所有文章,模糊匹配
+func (a Article) ListArticleByTitle(db *gorm.DB, pageOffset, pageSize int) ([]*Article, error) {
+	var ArticleList []*Article
+	// 从第几条数据开始查
+	if pageOffset >= 0 && pageSize > 0 {
+		db = db.Offset(pageOffset).Limit(pageSize)
+	}
+	// db = db.Where("state = ?", a.State)
+	// 模糊查找
+	if err := db.Where(fmt.Sprintf("title LIKE '%%%s%%' AND state = %d AND is_del = %d", a.Title, a.State, 0)).Order("modified_on DESC").Find(&ArticleList).Error; err != nil {
+		return nil, err
+	}
+	return ArticleList, nil
+}
+
+// func (a Article) CountArticleByTagID(db *gorm.DB, tagId uint64) (int, error) {
+// 	var count int
+// 	if err := db.Table(ArticleTag{}.TableName()+"AS at").
+// 		Joins("LEFT JOIN `"+Tag{}.TableName()+"` AS t ON at.tag_id = t.tag_id").
+// 		Joins("LEFT JOIN `"+Article{}.TableName()+"` AS a ON at.article_id = a.article_id").
+// 		Where("at.tag_id = ? AND a.state = ? AND a.is_del = ?", tagId, a.State, 0).
+// 		Count(&count).Error; err != nil {
+// 		return 0, err
+// 	}
+// 	return count, nil
+// }
+
+// CountArticle 查询文章数量，把标签和 TagId写到一起了，优先根据标题查询（应该是有更好的方法实现）
+func (a Article) CountArticle(db *gorm.DB, tagId uint64) (int, error) {
+	var count int
+	// 如果标题存在，根据标题查询，否则根据 tagId 查询
+	if a.Title != "" {
+		if err := db.Model(&a).Where(fmt.Sprintf("title LIKE '%%%s%%' AND state = %d AND is_del = %d", a.Title, a.State, 0)).Order("modified_on DESC").Count(&count).Error; err != nil {
+			return 0, err
+		}
+	} else if tagId != 0 {
+		if err := db.Table(ArticleTag{}.TableName()+"AS at").
+			Joins("LEFT JOIN `"+Tag{}.TableName()+"` AS t ON at.tag_id = t.tag_id").
+			Joins("LEFT JOIN `"+Article{}.TableName()+"` AS a ON at.article_id = a.article_id").
+			Where("at.tag_id = ? AND a.state = ? AND a.is_del = ?", tagId, a.State, 0).
+			Count(&count).Error; err != nil {
+			return 0, err
+		}
+	}
+	return count, nil
 }

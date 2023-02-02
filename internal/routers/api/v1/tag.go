@@ -58,23 +58,24 @@ func (t Tag) List(c *gin.Context) {
 	}
 	// 2.业务逻辑处理
 	svc := service.New(c.Request.Context())
+	// 解析 URL 传入的页码和每页展示数量
+	pager := app.Pager{
+		Page:     app.GetPage(c),     // 第几页
+		PageSize: app.GetPageSize(c), // 每页显示多少数据
+	}
+	// 根据page 和 param 等参数去查询数据相关数据
+	tagList, err := svc.ListTag(&param, &pager)
+	if err != nil {
+		response.ToErrorResponse(errcode.ErrorGetTagListFail)
+		return
+	}
+	// 查询符合条件的标签总数，返回前端
 	totalRows, err := svc.CountTag(&params.CountTagRequest{
 		Name:  param.Name,
 		State: param.State,
 	})
 	if err != nil {
 		response.ToErrorResponse(errcode.ErrorCountTagFail)
-		return
-	}
-	// 先查询有多少个标签
-	// 解析 URL 传入的页码和每页展示数量
-	pager := app.Pager{
-		Page:     app.GetPage(c),
-		PageSize: app.GetPageSize(c),
-	}
-	tagList, err := svc.ListTag(&param, &pager)
-	if err != nil {
-		response.ToErrorResponse(errcode.ErrorGetTagListFail)
 		return
 	}
 	// panic("failed to get tag list test email")
@@ -96,8 +97,8 @@ func (t Tag) List(c *gin.Context) {
 func (t Tag) Create(c *gin.Context) {
 	response := app.NewResponse(c)
 	// 1. 解析参数
-	param := params.CreateTagRequest{} // 也有一个问题，没传入 state，解析后 state 是 0，这是正常的
-	// param := params.CreateTagRequest{State: 1}
+	// param := params.CreateTagRequest{} // 也有一个问题，没传入 state，解析后 state 是 0，这是正常的
+	param := params.CreateTagRequest{State: 1}
 	userID, err := service.GetUserID(c)
 	if err != nil {
 		response.ToErrorResponse(errcode.NotLogin)

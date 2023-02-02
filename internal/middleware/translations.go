@@ -13,7 +13,7 @@ import (
 )
 
 // 翻译器不能作为中间件使用，并发的时候，会引发fatal error: concurrent map read and map write
-
+// https://www.cnblogs.com/wanghaostec/p/15037690.html
 const (
 	ZH = "zh"
 	EN = "en"

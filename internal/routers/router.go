@@ -30,7 +30,7 @@ func NewRouter() *gin.Engine {
 	r.Use(middleware.RateLimiter(global.AuthMethodLimiters))                          // 令牌桶
 	r.Use(middleware.GinLogger())                                                     // 日志中间件
 	r.Use(middleware.GinRecovery())                                                   // recovery中间件
-	// r.Use(middleware.Translations())                                                  // 翻译器
+	// r.Use(middleware.Translations())                                                  // 翻译器中间件，废弃
 	r.Use(middleware.Tracing()) // 要在s所有路由注册之前使用 路由追踪
 	// swagger 路由
 	r.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
@@ -49,6 +49,7 @@ func NewRouter() *gin.Engine {
 		apiV1.POST("/upload/file", upload.UploadFile)
 		apiV1.StaticFS("/static", http.Dir(global.AppSetting.UploadImage.UploadSavePath))
 		// 设计路由的时候，使用不同的方法进行不同的操作
+
 		apiV1.POST("/tags", tag.Create) // 创建
 		apiV1.GET("/tags", tag.List)    // 获取标签列表
 		// apiV1.GET("/tags", tag.Get)           // 获取单个标签
@@ -56,6 +57,7 @@ func NewRouter() *gin.Engine {
 		apiV1.DELETE("/tags/:id", tag.Delete) // 删除
 		apiV1.PUT("/tags/:id", tag.Update)    // 全量更新
 		// apiV1.PATCH("/tags/:id/state", tag.Update) // 更新部分；这个就是改变标签是否可用和PUT重复了
+
 		apiV1.POST("/articles", atricle.Create) // 创建
 		apiV1.GET("/articles", atricle.List)    // 获取多个文章
 		// apiV1.GET("/articles", atricle.Get)           // 获取单个文章

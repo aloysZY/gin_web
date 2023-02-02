@@ -17,20 +17,24 @@ func NewArticle() Article { return Article{} }
 // List 查询多个文章接口
 func (a Article) List(c *gin.Context) {
 	response := app.NewResponse(c)
+
 	// 1.解析请求
-	param := params.ListArticleRequest{}
+	param := params.ListArticleRequest{State: 1}
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 	}
 
 	// 2.业务解析
 	svc := service.New(c.Request.Context())
-	// 查找文章数据库中满足条件的文章数量
-	svc.CountArticle(&params.CountArticleRequest{
-		ArticleId: param.ArticleId,
-		State:     param.State})
+	pager := app.Pager{Page: app.GetPage(c), PageSize: app.GetPageSize(c)}
 
-	// svc.ListArticle(param.ArticleId, param.State)
+	// 根据page 和 param 等参数去查询数据相关数据
+	// 解析 URL 传入的页码和每页展示数量
+	articleList, totalRows, err := svc.ListArticle(&param, &pager)
+	if err != nil {
+		return
+	}
+	response.ToResponseList(articleList, totalRows)
 
 	// 3.设置每页返回的内容数量，返回数据
 

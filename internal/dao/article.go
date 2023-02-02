@@ -1,6 +1,10 @@
 package dao
 
-import "github.com/aloysZy/gin_web/internal/model"
+import (
+	"github.com/aloysZy/gin_web/internal/model"
+	"github.com/aloysZy/gin_web/internal/routers/api/params"
+	"github.com/aloysZy/gin_web/pkg/app"
+)
 
 // Article 文章结构体，tag 使用形参传参，但是文章内容太大了，使用结构体指针
 type Article struct {
@@ -14,6 +18,7 @@ type Article struct {
 	CoverImageUrl string `json:"cover_image_url"`
 }
 
+// CreateArticle 创建文章
 func (d *Dao) CreateArticle(param *Article) error {
 	article := &model.Article{
 		State:     param.State,
@@ -26,4 +31,24 @@ func (d *Dao) CreateArticle(param *Article) error {
 		Model:         &model.Model{CreatedBy: param.CreatedBy},
 	}
 	return article.Create(d.Engine)
+}
+
+func (d *Dao) CountArticle(param *params.CountArticleRequest) (int, error) {
+	article := &model.Article{
+		State: param.State,
+		Title: param.Title,
+	}
+	return article.CountArticle(d.Engine, param.TagId)
+}
+func (d *Dao) ListArticleByTitle(title string, state uint8, page, pageSize int) ([]*model.Article, error) {
+	article := &model.Article{Title: title, State: state}
+	pageOffset := app.GetPageOffset(page, pageSize)
+	return article.ListArticleByTitle(d.Engine, pageOffset, pageSize)
+}
+
+// CountArticleByTagID 根据tagId查找对应的文章数量
+func (d *Dao) CountArticleByTagID(tagId uint64, state uint8) error {
+	// article := &model.Article{State: state}
+	// article.CountArticleByTagID(d.Engine, tagId)
+	return nil
 }

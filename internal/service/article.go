@@ -2,7 +2,9 @@ package service
 
 import (
 	"github.com/aloysZy/gin_web/internal/dao"
+	"github.com/aloysZy/gin_web/internal/model"
 	"github.com/aloysZy/gin_web/internal/routers/api/params"
+	"github.com/aloysZy/gin_web/pkg/app"
 	"github.com/aloysZy/gin_web/pkg/errcode"
 	"github.com/aloysZy/gin_web/pkg/setting"
 	"go.uber.org/zap"
@@ -49,7 +51,7 @@ func (svc *Service) CreateArticle(param *params.CreateArticleRequest) error {
 		}
 	}
 
-	// 提交事务
+	// 提交
 	if err = svc.dao.Engine.Commit().Error; err != nil {
 		zap.L().Error("svc.dao.Engine.Commit() failed", zap.Error(err))
 		return err
@@ -57,10 +59,29 @@ func (svc *Service) CreateArticle(param *params.CreateArticleRequest) error {
 	return nil
 }
 
-func (svc *Service) CountArticle(param *params.CountArticleRequest) {
+// ListArticle 获取文章列表
+func (svc *Service) ListArticle(param *params.ListArticleRequest, pager *app.Pager) ([]*model.Article, int, error) {
+	var (
+		articleList []*model.Article
+		totalRows   int
+		err         error
+	)
 
-}
+	// 根据标题模糊搜索
+	if param.Title != "" {
+		// 直接根据文章名称去查文章标题，找到返回所有找到的
+		articleList, err = svc.dao.ListArticleByTitle(param.Title, param.State, pager.Page, pager.PageSize)
+		if err != nil {
+			return nil, 0, err
+		}
+	} else if param.TagId != 0 { //  根据标签id,查询关联表中的文章 ID，文章列表
+		svc.dao.CountArticleByTagID(param.TagId, param.State)
+	}
+	totalRows, err = svc.dao.CountArticle(&params.CountArticleRequest{Title: param.Title, State: param.State})
+	if err != nil {
+		return nil, 0, err
+	}
+	// 如果都没输入就查询所有的
 
-func (svc *Service) ListArticle(articleId uint64, state uint8) {
-
+	return articleList, totalRows, err
 }
