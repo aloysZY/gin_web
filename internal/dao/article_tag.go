@@ -11,9 +11,9 @@ func (d *Dao) CreateArticleTag(articleId, tagId, createdBy uint64) error {
 	return articleTag.Create(d.Engine)
 }
 
-func (d *Dao) ListTagNameByArticleId(articleId uint64) ([]string, error) {
+func (d *Dao) ListTagNameByArticleId(articleId uint64, state uint8) ([]string, error) {
 	articleTag := &model.ArticleIdTagId{ArticleId: articleId}
-	ListTagName, err := articleTag.ListTagNameByArticleId(d.Engine)
+	ListTagName, err := articleTag.ListTagNameByArticleId(d.Engine, state)
 	if err != nil {
 		return nil, err
 	}

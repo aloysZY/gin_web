@@ -15,6 +15,12 @@ type SwaggerTage struct {
 	Page *app.Pager
 }
 
+// SwaggerArticle 文章
+type SwaggerArticle struct {
+	List []*model.ArticleTag
+	Page *app.Pager
+}
+
 // Swagger 空结构体
 type Swagger struct{}
 

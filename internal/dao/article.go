@@ -59,13 +59,3 @@ func (d *Dao) ListArticleByTitle(title string, state uint8, page, pageSize int) 
 	pageOffset := app.GetPageOffset(page, pageSize)
 	return article.ListArticleByTitle(d.Engine, pageOffset, pageSize)
 }
-
-func (d *Dao) GetArticleCreatedByByArticleId(articleList []*model.Article) ([]*model.Article, error) {
-	for _, article := range articleList {
-		userName, err := article.GetArticleCreatedByByArticleId(d.Engine)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return articleList, nil
-}

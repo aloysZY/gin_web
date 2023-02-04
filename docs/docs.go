@@ -17,6 +17,121 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/articles": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "查询文章 支持文章名称模糊查找",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章"
+                ],
+                "summary": "查询文章",
+                "parameters": [
+                    {
+                        "maxLength": 100,
+                        "type": "string",
+                        "description": "文章标题",
+                        "name": "title",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1
+                        ],
+                        "type": "integer",
+                        "default": 1,
+                        "description": "状态",
+                        "name": "state",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/third_party.SwaggerArticle"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建文章接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章"
+                ],
+                "summary": "创建文章",
+                "parameters": [
+                    {
+                        "description": "创建标签",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/params.CreateArticleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/third_party.Swagger"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/tags": {
             "get": {
                 "security": [
@@ -291,7 +406,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/params.AuthRequest"
+                            "$ref": "#/definitions/params.SignUpRequest"
                         }
                     }
                 ],
@@ -339,27 +454,57 @@ const docTemplate = `{
         "errcode.Error": {
             "type": "object"
         },
-        "model.Tag": {
+        "model.ArticleTag": {
             "type": "object",
             "properties": {
-                "created_by": {
-                    "description": "创建人",
+                "article_id": {
+                    "description": "设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真",
                     "type": "integer"
+                },
+                "content": {
+                    "description": "文章内容",
+                    "type": "string"
+                },
+                "cover_image_url": {
+                    "description": "封面图片地址",
+                    "type": "string"
                 },
                 "created_on": {
                     "description": "创建时间 ，自动获取提交时间",
                     "type": "integer"
                 },
-                "deleted_on": {
-                    "description": "删除时间，自动获取提交时间",
+                "desc": {
+                    "description": "文章简述",
+                    "type": "string"
+                },
+                "modified_on": {
+                    "description": "修改时间，自动获取提交时间",
                     "type": "integer"
                 },
-                "is_del": {
-                    "description": "是否删除 0 正常,1为删除，默认初始化 0",
-                    "type": "integer"
+                "name": {
+                    "description": "文章标题",
+                    "type": "string"
                 },
-                "modified_by": {
-                    "description": "修改人",
+                "tag_name": {
+                    "description": "这里可以设置，如果为空就不返回这列，跟前端协商",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "user_name": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "model.Tag": {
+            "type": "object",
+            "properties": {
+                "created_on": {
+                    "description": "创建时间 ，自动获取提交时间",
                     "type": "integer"
                 },
                 "modified_on": {
@@ -369,10 +514,6 @@ const docTemplate = `{
                 "name": {
                     "description": "名称",
                     "type": "string"
-                },
-                "state": {
-                    "description": "状态  1 正常 0为禁用",
-                    "type": "integer"
                 },
                 "tag_id": {
                     "description": "设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真",
@@ -389,14 +530,59 @@ const docTemplate = `{
             ],
             "properties": {
                 "app_key": {
-                    "type": "string",
-                    "maxLength": 20,
-                    "minLength": 5
+                    "description": "UserName  string ` + "`" + `json:\"user_name\" from:\"user_name\" binding:\"required,min=2,max=20\"` + "`" + `",
+                    "type": "string"
                 },
                 "app_secret": {
                     "type": "string",
                     "maxLength": 20,
                     "minLength": 5
+                }
+            }
+        },
+        "params.CreateArticleRequest": {
+            "type": "object",
+            "required": [
+                "content",
+                "cover_image_url",
+                "desc",
+                "title"
+            ],
+            "properties": {
+                "content": {
+                    "description": "文章内容",
+                    "type": "string",
+                    "maxLength": 4294967295,
+                    "minLength": 2
+                },
+                "cover_image_url": {
+                    "description": "文章封面",
+                    "type": "string"
+                },
+                "desc": {
+                    "description": "文章描述",
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
+                },
+                "state": {
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ],
+                    "example": 1
+                },
+                "tag_id": {
+                    "description": "标签 ID,创建文章可以不设置标签 omitempty 为空不显示",
+                    "type": "string",
+                    "example": "0"
+                },
+                "title": {
+                    "description": "文章标题",
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
                 }
             }
         },
@@ -411,17 +597,44 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
+                },
+                "state": {
+                    "description": "from是将传入的参数和结构体进行绑定，但是名称中有\"_\"的时候存在问题，可以设置json来解决\nhttps://juejin.cn/post/7005465902804123679\nexample:\"1\"  swagger tag 设置默认值",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ],
+                    "example": 1
+                }
+            }
+        },
+        "params.SignUpRequest": {
+            "type": "object",
+            "required": [
+                "app_key",
+                "app_secret",
+                "user_name"
+            ],
+            "properties": {
+                "app_key": {
+                    "type": "string"
+                },
+                "app_secret": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 5
+                },
+                "user_name": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 2
                 }
             }
         },
         "params.UpdateTagRequest": {
             "type": "object",
             "properties": {
-                "name": {
-                    "description": "名称;要修改的标签名称",
-                    "type": "string",
-                    "maxLength": 100
-                },
                 "state": {
                     "description": "状态；可以更新状态为不可用，需要传入",
                     "type": "integer",
@@ -435,6 +648,20 @@ const docTemplate = `{
         },
         "third_party.Swagger": {
             "type": "object"
+        },
+        "third_party.SwaggerArticle": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ArticleTag"
+                    }
+                },
+                "page": {
+                    "$ref": "#/definitions/app.Pager"
+                }
+            }
         },
         "third_party.SwaggerAuth": {
             "type": "object"

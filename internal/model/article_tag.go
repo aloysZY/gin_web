@@ -22,11 +22,11 @@ func (at ArticleIdTagId) Create(db *gorm.DB) error {
 	return nil
 }
 
-func (at ArticleIdTagId) ListTagNameByArticleId(db *gorm.DB) ([]string, error) {
+func (at ArticleIdTagId) ListTagNameByArticleId(db *gorm.DB, state uint8) ([]string, error) {
 	// 使用联合查询，在文章和标签关联表中查询到标签 ID，在标签表中根据标签ID，查询标签name,返回到一个列表中
 	var articleTag []string
 	db.Table(ArticleIdTagId{}.TableName()+" AS at").
-		Joins("LEFT JOIN `"+Tag{}.TableName()+"` AS t ON t.tag_id=at.tag_id").
-		Where("at.article_id=?", at.ArticleId).Pluck("name", &articleTag) // Pluck("name")这个name是要查询的字段列名称,聚合的表中有其他重复的列字段，是查询不到的
+		Joins("LEFT JOIN `"+Tag{}.TableName()+"` AS t ON t.tag_id = at.tag_id").
+		Where("at.article_id = ? AND state = ? AND t.is_del = ?", at.ArticleId, state, 0).Pluck("name", &articleTag) // Pluck("name")这个name是要查询的字段列名称,聚合的表中有其他重复的列字段，是查询不到的
 	return articleTag, nil
 }

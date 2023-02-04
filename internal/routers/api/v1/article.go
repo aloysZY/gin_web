@@ -14,6 +14,20 @@ type Article struct{}
 // NewArticle 路由初始化使用，空结构体，使用指针和值都没关系
 func NewArticle() Article { return Article{} }
 
+// List 查询文章
+// @Summary 查询文章
+// @Description 查询文章 支持文章名称模糊查找
+// @Tags 文章
+// @Produce  json
+// @Param title query string false "文章标题" maxlength(100)
+// @Param state query int false "状态" Enums(0, 1) default(1)
+// @Param page query int false "页码"
+// @Param page_size query int false "每页数量"
+// @Security ApiKeyAuth
+// @Success 200 {object} third_party.SwaggerArticle "成功"
+// @Failure 400 {object} errcode.Error "请求错误"
+// @Failure 500 {object} errcode.Error "内部错误"
+// @Router /api/v1/articles [get]
 // List 查询多个文章接口
 func (a Article) List(c *gin.Context) {
 	response := app.NewResponse(c)
@@ -36,22 +50,23 @@ func (a Article) List(c *gin.Context) {
 		response.ToErrorResponse(errcode.ErrorGetArticlesFail.WithDetails(err.Error()))
 		return
 	}
-
-	// 这里应该还有一步，根据文章 ID，去查找文章标签表中的文章对于的标签，用标签 ID 查找标签表，返回标签名称
-	articleTagList, err := svc.ListTagNameByArticleId(articleList)
-	if err != nil {
-		response.ToErrorResponse(errcode.ErrorGetArticlesFail.WithDetails(err.Error()))
-		return
-	}
-
-	// 返回的应该是另一个结构体
-	response.ToResponseList(articleTagList, totalRows)
+	// 这里应该还有一步，根据文章 ID，去查找文章标签表中的文章对于的标签，用标签 ID 查找标签表，返回标签名称,在svc.ListArticleS里面做了
 
 	// 3.设置每页返回的内容数量，返回数据
-
+	response.ToResponseList(articleList, totalRows)
 }
 
 // Create 创建文章
+// @Summary 创建文章
+// @Description 创建文章接口
+// @Tags 文章
+// @Produce  json
+// @Param object body params.CreateArticleRequest true "创建文章"
+// @Security ApiKeyAuth
+// @Success 200 {object} third_party.Swagger "成功"
+// @Failure 400 {object} errcode.Error "请求错误"
+// @Failure 500 {object} errcode.Error "内部错误"
+// @Router /api/v1/articles [post]
 func (a Article) Create(c *gin.Context) {
 	response := app.NewResponse(c)
 	// 1.解析参数
@@ -80,7 +95,7 @@ func (a Article) Create(c *gin.Context) {
 		return
 	}
 
-	response.ToResponse(param)
+	response.ToResponse(gin.H{})
 }
 
 // 更新文章

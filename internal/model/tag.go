@@ -2,20 +2,16 @@
 package model
 
 import (
-	"sync"
-
 	"github.com/aloysZy/gin_web/pkg/errcode"
 	"github.com/jinzhu/gorm"
 )
 
-var rwMutex sync.RWMutex
-
 // Tag TAG生成返回的数据
 type Tag struct {
-	State  uint8          `json:"state"`         // 状态  1 正常 0为禁用
-	TagID  uint64         `json:"tag_id,string"` // 设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真
-	Name   string         `json:"name"`          // 名称
-	*Model `json:"model"` // 公共字段
+	State  uint8      `json:"-"`             // `json:"state"`         // 状态  1 正常 0为禁用
+	TagID  uint64     `json:"tag_id,string"` // 设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真
+	Name   string     `json:"name"`          // 名称
+	*Model `json:"-"` // `json:"model"` // 公共字段
 	// json:"model" 本身是结构体嵌套，不写返回数据和 name 是在一层，写了之后，在一个新层里展示
 }
 

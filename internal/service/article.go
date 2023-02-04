@@ -67,7 +67,7 @@ func (svc *Service) CreateArticle(param *params.CreateArticleRequest) error {
 }
 
 // ListArticleS 获取文章列表
-func (svc *Service) ListArticleS(param *params.ListArticleRequest, pager *app.Pager) ([]*model.Article, int, error) {
+func (svc *Service) ListArticleS(param *params.ListArticleRequest, pager *app.Pager) ([]*model.ArticleTag, int, error) {
 	var (
 		articleList []*model.Article
 		totalRows   int
@@ -102,31 +102,63 @@ func (svc *Service) ListArticleS(param *params.ListArticleRequest, pager *app.Pa
 			return nil, 0, err
 		}
 	}
-	// 修改返回文章中的创建人"created_by": 444315400298037249 查询为对于的name
-	newArticleList, err := svc.dao.GetArticleCreatedByByArticleId(articleList)
-	if err != nil {
-		zap.L().Error("svc.dao.GetArticleCreatedByByArticleId failed", zap.Error(err))
-		return nil, 0, err
-	}
-	return newArticleList, totalRows, err
-}
 
-func (svc *Service) ListTagNameByArticleId(articleList []*model.Article) ([]*model.ArticleTag, error) {
-	// var articleTageList []*model.ArticleTag
-	articleTageList := make([]*model.ArticleTag, 0, len(articleList)) // 先预分配空间，大数据提高性能
-	articleTage := new(model.ArticleTag)                              // 初始化指针
+	// 不在函数外调用方法了，在这里做吧
+	articleTageList := make([]*model.ArticleTag, 0, len(articleList)) // 先初始化，避免数据量太大频繁申请内存
 	for _, article := range articleList {
-		tagName, err := svc.dao.ListTagNameByArticleId(article.ArticleId)
+		articleTage := new(model.ArticleTag)
+		// 根据文章 ID 查找标签名称
+		tagNameList, err := svc.dao.ListTagNameByArticleId(article.ArticleId, article.State)
 		if err != nil {
 			zap.L().Error("svc.dao.ListTagNameByArticleId failed", zap.Error(err))
-			return nil, err
+			return nil, 0, err
 		}
-		// articleTage.TagName = tagName  先要初始化才能赋值，这是一个切片
-		articleTage.TagName = make([]string, 0, len(tagName))
-		articleTage.TagName = tagName
+		articleTage.Article = article // 复制文章信息
+		// articleTage.TagName = make([]string, 0, len(tagNameList)) //这个应该写 append 就行
+		// articleTage.TagName = tagNameList ///这个应该写 append 就行,数据量不是很大，不会台频繁的申请内存
+		articleTage.TagName = append(articleTage.TagName, tagNameList...)
 
-		articleTage.Article = article
+		// 根据文章 ID 查找创建人名称
+		userName, err := svc.dao.GetUserNameByArticleCreatedBy(article.CreatedBy)
+		if err != nil {
+			zap.L().Error("svc.dao.GetUserNameByArticleCreatedBy failed", zap.Error(err))
+			return nil, 0, err
+		}
+		// articleTage.TagName = make([]string, 0, len(tagNameList)) 这里同理
+		// articleTage.UserName = userName
+		articleTage.UserName = append(articleTage.UserName, userName...)
+
+		// 整体数据添加
 		articleTageList = append(articleTageList, articleTage)
 	}
-	return articleTageList, nil
+
+	// 修改返回文章中的创建人"created_by": 444315400298037249 查询为对于的name
+	/*	newArticleList, err := svc.dao.GetUserNameByArticleCreatedBy(articleList)
+		if err != nil {
+			zap.L().Error("svc.dao.GetUserNameByArticleCreatedBy failed", zap.Error(err))
+			return nil, 0, err
+		}*/ // 这个也不循环了，放在for _, article := range articleList 这里做
+
+	return articleTageList, totalRows, err
 }
+
+// 放在ListArticleS里面实现了
+// func (svc *Service) ListTagNameByArticleId(articleList []*model.Article) ([]*model.ArticleTag, error) {
+// 	// var articleTageList []*model.ArticleTag
+// 	articleTageList := make([]*model.ArticleTag, 0, len(articleList)) // 先预分配空间，大数据提高性能
+// 	articleTage := new(model.ArticleTag)                              // 初始化指针
+// 	for _, article := range articleList {
+// 		tagName, err := svc.dao.ListTagNameByArticleId(article.ArticleId)
+// 		if err != nil {
+// 			zap.L().Error("svc.dao.ListTagNameByArticleId failed", zap.Error(err))
+// 			return nil, err
+// 		}
+// 		// articleTage.TagName = tagName  先要初始化才能赋值，这是一个切片
+// 		articleTage.TagName = make([]string, 0, len(tagName))
+// 		articleTage.TagName = tagName
+//
+// 		articleTage.Article = article
+// 		articleTageList = append(articleTageList, articleTage)
+// 	}
+// 	return articleTageList, nil
+// }

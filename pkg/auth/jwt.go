@@ -19,8 +19,8 @@ func GetJWTSecret() []byte {
 	return []byte(global.AppSetting.JWT.Secret)
 }
 
-// GenerateToken 获取token，最好还是密码验证后进行 token
-func GenerateToken(userId uint64) (string, error) {
+// CreateToken 获取token，最好还是密码验证后进行 token
+func CreateToken(userId uint64) (string, error) {
 	nowTime := time.Now()
 	expireTime := nowTime.Add(global.AppSetting.JWT.Expire)
 	// 创建一个我们自己的声明

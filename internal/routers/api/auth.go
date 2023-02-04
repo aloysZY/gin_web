@@ -18,14 +18,14 @@ func NewAuth() Auth { return Auth{} }
 // @Description 注册接口
 // @Tags 用户
 // @Produce  json
-// @Param object body params.AuthRequest true "注册用户"
+// @Param object body params.SignUpRequest true "注册用户"
 // @Success 200 {object} third_party.Swagger "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /signup [post]
 func (a *Auth) SignUp(c *gin.Context) {
 	response := app.NewResponse(c)
-	param := params.AuthRequest{}
+	param := params.SignUpRequest{}
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
@@ -62,7 +62,8 @@ func (a *Auth) Auth(c *gin.Context) {
 		response.ToErrorResponse(errcode.UnauthorizedAuthNotExist)
 		return
 	}
-	token, err := auth.GenerateToken(param.UserId)
+	// 创建 token，添加用户 ID
+	token, err := auth.CreateToken(param.UserId)
 	if err != nil {
 		response.ToErrorResponse(errcode.UnauthorizedTokenGenerate)
 		return

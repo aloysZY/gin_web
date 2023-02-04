@@ -11,7 +11,7 @@ import (
 )
 
 // CreateAuth 创建用户
-func (svc *Service) CreateAuth(param *params.AuthRequest) error {
+func (svc *Service) CreateAuth(param *params.SignUpRequest) error {
 	// 雪花算法生成 ID
 	id, err := setting.GetID()
 	if err != nil {
@@ -30,7 +30,7 @@ func (svc *Service) CreateAuth(param *params.AuthRequest) error {
 		return err
 	}
 	param.AppSecret = pwd
-	if err = svc.dao.CreateAuth(param.UserId, param.AppKey, param.AppSecret); err != nil {
+	if err = svc.dao.CreateAuth(param.UserId, param.UserName, param.AppKey, param.AppSecret); err != nil {
 		zap.L().Error("svc.dao.CreateAuth error: ", zap.Error(err))
 		return err
 	}
@@ -51,7 +51,7 @@ func (svc *Service) CheckAuth(param *params.AuthRequest) error {
 	}
 	// 如果大于 0，就是正常的，赋值后返回
 	if auth.UserId > 0 {
-		param.UserId = auth.UserId // 有多重方法可以实现这个值传出去，这里比较方便
+		param.UserId = auth.UserId // 有多重方法可以实现这个值传出去，这里比较方便，如果这个结构体没有 ID，就要在这里设置上下文
 		return nil
 	}
 	// return errors.New("auth info does not exist")

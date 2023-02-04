@@ -13,22 +13,43 @@ definitions:
     type: object
   errcode.Error:
     type: object
-  model.Tag:
+  model.ArticleTag:
     properties:
-      created_by:
-        description: 创建人
+      article_id:
+        description: 设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真
         type: integer
+      content:
+        description: 文章内容
+        type: string
+      cover_image_url:
+        description: 封面图片地址
+        type: string
       created_on:
         description: 创建时间 ，自动获取提交时间
         type: integer
-      deleted_on:
-        description: 删除时间，自动获取提交时间
+      desc:
+        description: 文章简述
+        type: string
+      modified_on:
+        description: 修改时间，自动获取提交时间
         type: integer
-      is_del:
-        description: 是否删除 0 正常,1为删除，默认初始化 0
-        type: integer
-      modified_by:
-        description: 修改人
+      name:
+        description: 文章标题
+        type: string
+      tag_name:
+        description: 这里可以设置，如果为空就不返回这列，跟前端协商
+        items:
+          type: string
+        type: array
+      user_name:
+        items:
+          type: string
+        type: array
+    type: object
+  model.Tag:
+    properties:
+      created_on:
+        description: 创建时间 ，自动获取提交时间
         type: integer
       modified_on:
         description: 修改时间，自动获取提交时间
@@ -36,9 +57,6 @@ definitions:
       name:
         description: 名称
         type: string
-      state:
-        description: 状态  1 正常 0为禁用
-        type: integer
       tag_id:
         description: 设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真
         example: "0"
@@ -47,8 +65,7 @@ definitions:
   params.AuthRequest:
     properties:
       app_key:
-        maxLength: 20
-        minLength: 5
+        description: UserName  string `json:"user_name" from:"user_name" binding:"required,min=2,max=20"`
         type: string
       app_secret:
         maxLength: 20
@@ -58,6 +75,42 @@ definitions:
     - app_key
     - app_secret
     type: object
+  params.CreateArticleRequest:
+    properties:
+      content:
+        description: 文章内容
+        maxLength: 4294967295
+        minLength: 2
+        type: string
+      cover_image_url:
+        description: 文章封面
+        type: string
+      desc:
+        description: 文章描述
+        maxLength: 255
+        minLength: 2
+        type: string
+      state:
+        enum:
+        - 0
+        - 1
+        example: 1
+        type: integer
+      tag_id:
+        description: 标签 ID,创建文章可以不设置标签 omitempty 为空不显示
+        example: "0"
+        type: string
+      title:
+        description: 文章标题
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - content
+    - cover_image_url
+    - desc
+    - title
+    type: object
   params.CreateTagRequest:
     properties:
       name:
@@ -65,15 +118,38 @@ definitions:
         maxLength: 100
         minLength: 2
         type: string
+      state:
+        description: |-
+          from是将传入的参数和结构体进行绑定，但是名称中有"_"的时候存在问题，可以设置json来解决
+          https://juejin.cn/post/7005465902804123679
+          example:"1"  swagger tag 设置默认值
+        enum:
+        - 0
+        - 1
+        example: 1
+        type: integer
     required:
     - name
     type: object
+  params.SignUpRequest:
+    properties:
+      app_key:
+        type: string
+      app_secret:
+        maxLength: 20
+        minLength: 5
+        type: string
+      user_name:
+        maxLength: 20
+        minLength: 2
+        type: string
+    required:
+    - app_key
+    - app_secret
+    - user_name
+    type: object
   params.UpdateTagRequest:
     properties:
-      name:
-        description: 名称;要修改的标签名称
-        maxLength: 100
-        type: string
       state:
         description: 状态；可以更新状态为不可用，需要传入
         enum:
@@ -83,6 +159,15 @@ definitions:
         type: integer
     type: object
   third_party.Swagger:
+    type: object
+  third_party.SwaggerArticle:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/model.ArticleTag'
+        type: array
+      page:
+        $ref: '#/definitions/app.Pager'
     type: object
   third_party.SwaggerAuth:
     type: object
@@ -102,6 +187,80 @@ info:
   title: gin_web
   version: "1.0"
 paths:
+  /api/v1/articles:
+    get:
+      description: 查询文章 支持文章名称模糊查找
+      parameters:
+      - description: 文章标题
+        in: query
+        maxLength: 100
+        name: title
+        type: string
+      - default: 1
+        description: 状态
+        enum:
+        - 0
+        - 1
+        in: query
+        name: state
+        type: integer
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/third_party.SwaggerArticle'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询文章
+      tags:
+      - 文章
+    post:
+      description: 创建文章接口
+      parameters:
+      - description: 创建标签
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/params.CreateArticleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/third_party.Swagger'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建文章
+      tags:
+      - 文章
   /api/v1/tags:
     get:
       description: 查询标签
@@ -276,7 +435,7 @@ paths:
         name: object
         required: true
         schema:
-          $ref: '#/definitions/params.AuthRequest'
+          $ref: '#/definitions/params.SignUpRequest'
       produces:
       - application/json
       responses:

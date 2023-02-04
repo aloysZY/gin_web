@@ -24,7 +24,7 @@ App:
     MaxBackups: 2  #日志份副本书
     MaxAge: 1  #最大天数
   Page:
-    DefaultPageSize: 20   #默认一页数据数量
+    DefaultPageSize: 1   #默认一页数据数量
     MaxPageSize: 100  #每页可显示的最大数据数量
   UploadImage:
     UploadSavePath: storage/uploads

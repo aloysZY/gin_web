@@ -6,6 +6,7 @@ import (
 
 type Auth struct {
 	UserId    uint64 `json:"user_id"`
+	UserName  string `json:"user_name"`
 	AppKey    string `json:"app_key"`
 	AppSecret string `json:"app_secret"`
 	*Model
@@ -30,4 +31,11 @@ func (a Auth) Get(db *gorm.DB) (Auth, error) {
 		return auth, err
 	}
 	return auth, nil
+}
+
+// GetUserNameByArticleCreatedBy 根据文章创建人，获取文章创建用户名称
+func (a Auth) GetUserNameByArticleCreatedBy(db *gorm.DB) ([]string, error) {
+	var userName []string
+	err := db.Model(&a).Where("user_id = ? AND is_del = ?", a.UserId, 0).Pluck("user_name", &userName).Error
+	return userName, err
 }
