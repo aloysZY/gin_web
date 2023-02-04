@@ -2,7 +2,6 @@ package dao
 
 import (
 	"github.com/aloysZy/gin_web/internal/model"
-	"github.com/aloysZy/gin_web/internal/routers/api/params"
 	"github.com/aloysZy/gin_web/pkg/app"
 )
 
@@ -33,22 +32,40 @@ func (d *Dao) CreateArticle(param *Article) error {
 	return article.Create(d.Engine)
 }
 
-func (d *Dao) CountArticle(param *params.CountArticleRequest) (int, error) {
+// CountArticle 查询文章数量
+func (d *Dao) CountArticle(state uint8) (int, error) {
 	article := &model.Article{
-		State: param.State,
-		Title: param.Title,
+		State: state,
 	}
-	return article.CountArticle(d.Engine, param.TagId)
+	return article.CountArticle(d.Engine)
 }
+
+// CountArticleByTitle 根据标题查询文章数量
+func (d *Dao) CountArticleByTitle(title string, state uint8) (int, error) {
+	article := &model.Article{Title: title, State: state}
+	return article.CountArticleByTitle(d.Engine)
+}
+
+// ListArticle 查询文章列表
+func (d *Dao) ListArticle(state uint8, page, pageSize int) ([]*model.Article, error) {
+	article := &model.Article{State: state}
+	pageOffset := app.GetPageOffset(page, pageSize)
+	return article.ListArticle(d.Engine, pageOffset, pageSize)
+}
+
+// ListArticleByTitle 根据标题查询文章列表
 func (d *Dao) ListArticleByTitle(title string, state uint8, page, pageSize int) ([]*model.Article, error) {
 	article := &model.Article{Title: title, State: state}
 	pageOffset := app.GetPageOffset(page, pageSize)
 	return article.ListArticleByTitle(d.Engine, pageOffset, pageSize)
 }
 
-// CountArticleByTagID 根据tagId查找对应的文章数量
-func (d *Dao) CountArticleByTagID(tagId uint64, state uint8) error {
-	// article := &model.Article{State: state}
-	// article.CountArticleByTagID(d.Engine, tagId)
-	return nil
+func (d *Dao) GetArticleCreatedByByArticleId(articleList []*model.Article) ([]*model.Article, error) {
+	for _, article := range articleList {
+		userName, err := article.GetArticleCreatedByByArticleId(d.Engine)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return articleList, nil
 }

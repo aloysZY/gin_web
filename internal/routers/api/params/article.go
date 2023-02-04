@@ -4,16 +4,16 @@ package params
 // form 是前端传入参数匹配结构体解析
 
 type CountArticleRequest struct {
-	State uint8  `json:"state" form:"state,default=1" binding:"oneof=0 1" example:"1"`
-	TagId uint64 `json:"tag_id" form:"tag_id" binding:"required"` // 文章标签，根据标签查询数量
-	Title string `json:"title" form:"title"`                      // 这里想要额外实现一个根据文章名称查询（创建文章的时候可以没有设置标签）
+	State uint8 `json:"state" form:"state,default=1" binding:"oneof=0 1" example:"1"`
+	// TagId uint64 `json:"tag_id" form:"tag_id" binding:"required"` // 文章标签，根据标签查询数量
+	Title string `json:"title" form:"title"` // 这里想要额外实现一个根据文章名称查询（创建文章的时候可以没有设置标签）
 }
 
-// ListArticleRequest 查询文章
+// ListArticleRequest 查询文章,全部文章和根据标题模糊查找接口
 type ListArticleRequest struct {
-	State uint8  `json:"state" form:"state,default=1" binding:"required_with_all=TagId Title,oneof=0 1" example:"1"`
-	TagId uint64 `json:"tag_id,staring" form:"tag_id"` // 文章标签，根据标签查询文章
-	Title string `json:"title" form:"title"`           // 这里想要额外实现一个根据文章名称查询（创建文章的时候可以没有设置标签）
+	State uint8 `json:"state" form:"state,default=1" binding:"required_with_all=TagId Title,oneof=0 1" example:"1"`
+	// TagId uint64 `json:"tag_id,staring" form:"tag_id"` // 文章标签，根据标签查询文章
+	Title string `json:"title" form:"title"` // 这里想要额外实现一个根据文章名称查询（创建文章的时候可以没有设置标签）
 }
 
 // CreateArticleRequest

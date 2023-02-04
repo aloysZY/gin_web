@@ -7,12 +7,14 @@ var (
 	ErrorDeleteTagFail  = NewError(20010004, "删除标签失败")
 	ErrorCountTagFail   = NewError(20010005, "统计标签失败")
 	ErrorTagExists      = NewError(20010006, "标签已经存在")
+	ErrorGetTagFail     = NewError(20010007, "标签不存在")
 
 	ErrorGetArticleFail    = NewError(20020001, "获取单个文章失败")
 	ErrorGetArticlesFail   = NewError(20020002, "获取多个文章失败")
 	ErrorCreateArticleFail = NewError(20020003, "创建文章失败")
 	ErrorUpdateArticleFail = NewError(20020004, "更新文章失败")
 	ErrorDeleteArticleFail = NewError(20020005, "删除文章失败")
+	ErrorNotArticle        = NewError(20020006, "没有对应的文章")
 
 	ErrorFileUpload             = NewError(20030001, "上传文件失败")
 	ErrorFileSuffixNotSupported = NewError(20030002, "文件后缀不符合类型要求")

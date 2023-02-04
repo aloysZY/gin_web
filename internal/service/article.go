@@ -45,7 +45,14 @@ func (svc *Service) CreateArticle(param *params.CreateArticleRequest) error {
 	// 执行 dao 记录文章ID和标签 ID
 	// 创建文章和标签的关联，因为文章可以没有标签，所以这里不设置事务（其实要设置，文章至少有一个标签）
 	if param.TagId != 0 {
-		if err = svc.dao.CreateArticleTag(param.ArticleId, param.TagId); err != nil {
+		// 在这里还要在添加一步，执行svc.dao.CreateArticleTag之前要先确保 tagid 数据库存在
+		err := svc.dao.GetTagByTagId(param.TagId)
+		if err != nil {
+			zap.L().Error("svc.dao.GetTagByTagId failed", zap.Error(err))
+			return err
+		}
+
+		if err = svc.dao.CreateArticleTag(param.ArticleId, param.TagId, param.CreatedBy); err != nil {
 			zap.L().Error("svc.dao.CreateArticleTag failed", zap.Error(err))
 			return err
 		}
@@ -59,29 +66,67 @@ func (svc *Service) CreateArticle(param *params.CreateArticleRequest) error {
 	return nil
 }
 
-// ListArticle 获取文章列表
-func (svc *Service) ListArticle(param *params.ListArticleRequest, pager *app.Pager) ([]*model.Article, int, error) {
+// ListArticleS 获取文章列表
+func (svc *Service) ListArticleS(param *params.ListArticleRequest, pager *app.Pager) ([]*model.Article, int, error) {
 	var (
 		articleList []*model.Article
 		totalRows   int
 		err         error
 	)
-
 	// 根据标题模糊搜索
 	if param.Title != "" {
 		// 直接根据文章名称去查文章标题，找到返回所有找到的
 		articleList, err = svc.dao.ListArticleByTitle(param.Title, param.State, pager.Page, pager.PageSize)
 		if err != nil {
+			zap.L().Error("svc.dao.ListArticleByTitle failed", zap.Error(err))
 			return nil, 0, err
 		}
-	} else if param.TagId != 0 { //  根据标签id,查询关联表中的文章 ID，文章列表
-		svc.dao.CountArticleByTagID(param.TagId, param.State)
+		if len(articleList) == 0 {
+			zap.L().Info("svc.dao.ListArticleByTitle", zap.Error(errcode.ErrorNotArticle))
+			return nil, 0, errcode.ErrorNotArticle
+		}
+		totalRows, err = svc.dao.CountArticleByTitle(param.Title, param.State)
+		if err != nil {
+			zap.L().Error("svc.dao.CountArticleByTitle failed", zap.Error(err))
+			return nil, 0, err
+		}
+	} else { // 查找全部的
+		articleList, err = svc.dao.ListArticle(param.State, pager.Page, pager.PageSize)
+		if err != nil {
+			zap.L().Error("svc.dao.ListArticle failed", zap.Error(err))
+			return nil, 0, err
+		}
+		totalRows, err = svc.dao.CountArticle(param.State)
+		if err != nil {
+			zap.L().Error("svc.dao.CountArticle failed", zap.Error(err))
+			return nil, 0, err
+		}
 	}
-	totalRows, err = svc.dao.CountArticle(&params.CountArticleRequest{Title: param.Title, State: param.State})
+	// 修改返回文章中的创建人"created_by": 444315400298037249 查询为对于的name
+	newArticleList, err := svc.dao.GetArticleCreatedByByArticleId(articleList)
 	if err != nil {
+		zap.L().Error("svc.dao.GetArticleCreatedByByArticleId failed", zap.Error(err))
 		return nil, 0, err
 	}
-	// 如果都没输入就查询所有的
+	return newArticleList, totalRows, err
+}
 
-	return articleList, totalRows, err
+func (svc *Service) ListTagNameByArticleId(articleList []*model.Article) ([]*model.ArticleTag, error) {
+	// var articleTageList []*model.ArticleTag
+	articleTageList := make([]*model.ArticleTag, 0, len(articleList)) // 先预分配空间，大数据提高性能
+	articleTage := new(model.ArticleTag)                              // 初始化指针
+	for _, article := range articleList {
+		tagName, err := svc.dao.ListTagNameByArticleId(article.ArticleId)
+		if err != nil {
+			zap.L().Error("svc.dao.ListTagNameByArticleId failed", zap.Error(err))
+			return nil, err
+		}
+		// articleTage.TagName = tagName  先要初始化才能赋值，这是一个切片
+		articleTage.TagName = make([]string, 0, len(tagName))
+		articleTage.TagName = tagName
+
+		articleTage.Article = article
+		articleTageList = append(articleTageList, articleTage)
+	}
+	return articleTageList, nil
 }

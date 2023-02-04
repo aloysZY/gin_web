@@ -24,6 +24,9 @@ func (a Auth) Get(db *gorm.DB) (Auth, error) {
 	db = db.Where("app_key = ? AND is_del = ?", a.AppKey, 0)
 	err := db.First(&auth).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
+		/*传入接收结果集的变量只能为Struct类型或Slice类型
+		当传入变量为Struct类型时，如果检索出来的数据为0条，会抛出ErrRecordNotFound错误
+		当传入变量为Slice类型时，任何条件下均不会抛出ErrRecordNotFound错误*/
 		return auth, err
 	}
 	return auth, nil

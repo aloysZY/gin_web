@@ -22,6 +22,7 @@ func (a Article) List(c *gin.Context) {
 	param := params.ListArticleRequest{State: 1}
 	if valid, errs := app.BindAndValid(c, &param); !valid {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
+		return
 	}
 
 	// 2.业务解析
@@ -30,11 +31,21 @@ func (a Article) List(c *gin.Context) {
 
 	// 根据page 和 param 等参数去查询数据相关数据
 	// 解析 URL 传入的页码和每页展示数量
-	articleList, totalRows, err := svc.ListArticle(&param, &pager)
+	articleList, totalRows, err := svc.ListArticleS(&param, &pager)
 	if err != nil {
+		response.ToErrorResponse(errcode.ErrorGetArticlesFail.WithDetails(err.Error()))
 		return
 	}
-	response.ToResponseList(articleList, totalRows)
+
+	// 这里应该还有一步，根据文章 ID，去查找文章标签表中的文章对于的标签，用标签 ID 查找标签表，返回标签名称
+	articleTagList, err := svc.ListTagNameByArticleId(articleList)
+	if err != nil {
+		response.ToErrorResponse(errcode.ErrorGetArticlesFail.WithDetails(err.Error()))
+		return
+	}
+
+	// 返回的应该是另一个结构体
+	response.ToResponseList(articleTagList, totalRows)
 
 	// 3.设置每页返回的内容数量，返回数据
 
@@ -59,9 +70,12 @@ func (a Article) Create(c *gin.Context) {
 	param.CreatedBy = userID
 
 	svc := service.New(c.Request.Context())
-
 	// 创建文章
 	if err = svc.CreateArticle(&param); err != nil {
+		if err == errcode.ErrorGetTagFail {
+			response.ToErrorResponse(errcode.ErrorGetTagFail)
+			return
+		}
 		response.ToErrorResponse(errcode.ErrorCreateArticleFail)
 		return
 	}

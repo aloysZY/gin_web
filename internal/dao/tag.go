@@ -82,3 +82,8 @@ func (d *Dao) DeleteTag(id, modifiedBy uint64) error {
 	}
 	return tag.Delete(d.Engine)
 }
+
+func (d *Dao) GetTagByTagId(tagId uint64) error {
+	tag := &model.Tag{TagID: tagId}
+	return tag.GetTagByTagId(d.Engine)
+}
