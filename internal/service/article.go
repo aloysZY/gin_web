@@ -1,6 +1,8 @@
 package service
 
 import (
+	"strconv"
+
 	"github.com/aloysZy/gin_web/internal/model"
 	"github.com/aloysZy/gin_web/internal/routers/api/params"
 	"github.com/aloysZy/gin_web/pkg/app"
@@ -43,20 +45,26 @@ func (svc *Service) CreateArticle(param *params.CreateArticleRequest) error {
 
 	// 执行 dao 记录文章ID和标签 ID
 	// 创建文章和标签的关联，因为文章可以没有标签，所以这里不设置事务（其实要设置，文章至少有一个标签）
-	if param.TagId != 0 {
+	if len(param.TagId) != 0 {
 		// 在这里还要在添加一步，执行svc.dao.CreateArticleTag之前要先确保 tagid 数据库存在
-		err := svc.dao.GetTagByTagId(param.TagId)
-		if err != nil {
-			zap.L().Error("svc.dao.GetTagByTagId failed", zap.Error(err))
-			return err
-		}
-
-		if err = svc.dao.CreateArticleTag(param.ArticleId, param.TagId, param.CreatedBy); err != nil {
-			zap.L().Error("svc.dao.CreateArticleTag failed", zap.Error(err))
-			return err
+		for _, idStr := range param.TagId {
+			idInt64, err := strconv.ParseUint(idStr, 10, 64)
+			// 测试的时候发一个问题，生成tagid的值可能大于 uint64，所以 tagid 要设置为字符串（后期修改，那也不对呀，雪花算法生成的返回值就是 uint64
+			if err != nil {
+				zap.L().Error("svc.dao.GetTagIdByTagId.strconv.ParseInt", zap.Error(err))
+				return err
+			}
+			err = svc.dao.GetTagIdByTagId(idInt64)
+			if err != nil {
+				zap.L().Error("svc.dao.GetTagIdByTagId failed", zap.Error(err))
+				return err
+			}
+			if err = svc.dao.CreateArticleTag(param.ArticleId, idInt64, param.CreatedBy); err != nil {
+				zap.L().Error("svc.dao.CreateArticleTag failed", zap.Error(err))
+				return err
+			}
 		}
 	}
-
 	// 提交
 	if err = svc.dao.Engine.Commit().Error; err != nil {
 		zap.L().Error("svc.dao.Engine.Commit() failed", zap.Error(err))

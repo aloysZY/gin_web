@@ -74,7 +74,7 @@ func (t Tag) Delete(db *gorm.DB) error {
 	return db.Where("tag_id = ? AND is_del = ?", t.TagID, 0).Delete(&t).Error
 }
 
-func (t Tag) GetTagByTagId(db *gorm.DB) error {
+func (t Tag) GetTagIdByTagId(db *gorm.DB) error {
 	// 	查询指定列能不能找到
 	if err := db.Where("tag_id = ? AND is_del = ?", t.TagID, 0).Find(&t).Error; err != nil {
 		db.Rollback()

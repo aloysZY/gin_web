@@ -19,14 +19,15 @@ type ListArticleRequest struct {
 
 // CreateArticleRequest 创建文章
 type CreateArticleRequest struct {
-	State         uint8  `json:"state" form:"state,default=1" binding:"oneof=0 1" example:"1"`
-	ArticleId     uint64 `json:"article_id" form:"article_id" swaggerignore:"true"`
-	TagId         uint64 `json:"tag_id,string,omitempty" from:"tag_id" binding:"number"`         // 标签 ID,创建文章可以不设置标签 omitempty 为空不显示
-	CreatedBy     uint64 `json:"created_by" form:"created_by" swaggerignore:"true"`              // 创建人；以后从 token 中获取；min 和 max 限制的是长度 2-100s
-	Title         string `json:"title" form:"title" binding:"required,min=2,max=100"`            // 文章标题
-	Desc          string `json:"desc" form:"desc" binding:"required,min=2,max=255"`              // 文章描述
-	Content       string `json:"content" form:"content" binding:"required,min=2,max=4294967295"` // 文章内容
-	CoverImageUrl string `json:"cover_image_url" form:"cover_image_url" binding:"required,url"`  // 文章封面
+	State     uint8  `json:"state" form:"state,default=1" binding:"oneof=0 1" example:"1"`
+	ArticleId uint64 `json:"article_id" form:"article_id" swaggerignore:"true"`
+	// TagId         []string `json:"tag_id,string,omitempty" from:"tag_id[]" binding:"number"`       // 标签 ID,创建文章可以不设置标签 omitempty 为空不显示
+	TagId         []string `json:"tag_id,string,omitempty" from:"tag_id[]"`                        // 标签 ID,binding:"number"用字符串接收了，这个参数不要了，用列表接收 `json:"tag_id,string  这个 string 不生效
+	CreatedBy     uint64   `json:"created_by" form:"created_by" swaggerignore:"true"`              // 创建人；以后从 token 中获取；min 和 max 限制的是长度 2-100s
+	Title         string   `json:"title" form:"title" binding:"required,min=2,max=100"`            // 文章标题
+	Desc          string   `json:"desc" form:"desc" binding:"required,min=2,max=255"`              // 文章描述
+	Content       string   `json:"content" form:"content" binding:"required,min=2,max=4294967295"` // 文章内容
+	CoverImageUrl string   `json:"cover_image_url" form:"cover_image_url" binding:"required,url"`  // 文章封面
 }
 
 // GetArticleRequest 根据 ID 获取单个文章
