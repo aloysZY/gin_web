@@ -29,20 +29,6 @@ func (svc *Service) CreateArticle(param *params.CreateArticleRequest) error {
 	// 想法是初始化一个事务句柄，这个程序后续的都使用这个事务句柄操作
 	svc.dao.Engine = svc.dao.Engine.Begin()
 
-	// 执行 dao 创建文章
-	if err = svc.dao.CreateArticle(&model.Article{
-		State:         param.State,
-		ArticleId:     param.ArticleId,
-		Title:         param.Title,
-		Desc:          param.Desc,
-		Content:       param.Content,
-		CoverImageUrl: param.CoverImageUrl,
-		Model:         &model.Model{CreatedBy: param.CreatedBy},
-	}); err != nil {
-		zap.L().Error("svc.dao.CreateArticle failed", zap.Error(err))
-		return err
-	}
-
 	// 执行 dao 记录文章ID和标签 ID
 	// 创建文章和标签的关联，因为文章可以没有标签，所以这里不设置事务（其实要设置，文章至少有一个标签）
 	if len(param.TagId) != 0 {
@@ -65,6 +51,20 @@ func (svc *Service) CreateArticle(param *params.CreateArticleRequest) error {
 			}
 		}
 	}
+	// 执行 dao 创建文章,这个要放在最后执行，其他都没问题了，才进行文章创建，这个需要的时间长
+	if err = svc.dao.CreateArticle(&model.Article{
+		State:         param.State,
+		ArticleId:     param.ArticleId,
+		Title:         param.Title,
+		Desc:          param.Desc,
+		Content:       param.Content,
+		CoverImageUrl: param.CoverImageUrl,
+		Model:         &model.Model{CreatedBy: param.CreatedBy},
+	}); err != nil {
+		zap.L().Error("svc.dao.CreateArticle failed", zap.Error(err))
+		return err
+	}
+
 	// 提交
 	if err = svc.dao.Engine.Commit().Error; err != nil {
 		zap.L().Error("svc.dao.Engine.Commit() failed", zap.Error(err))

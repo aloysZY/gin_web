@@ -76,9 +76,17 @@ func (t Tag) Delete(db *gorm.DB) error {
 
 func (t Tag) GetTagIdByTagId(db *gorm.DB) error {
 	// 	查询指定列能不能找到
-	if err := db.Where("tag_id = ? AND is_del = ?", t.TagID, 0).Find(&t).Error; err != nil {
+	// if err := db.Where("tag_id = ? AND is_del = ?", t.TagID, 0).Find(&t).Error; err != nil {
+	// 	db.Rollback()
+	// 	return errcode.ErrorGetTagFail
+	// }
+	// 优化一下这个 SQL，这么查询太慢了
+	if err := db.Select("tag_id").Where("tag_id = ? AND is_del = ?", t.TagID, 0).First(&t).Error; err != nil {
 		db.Rollback()
-		return errcode.ErrorGetTagFail
+		if err == gorm.ErrRecordNotFound {
+			return errcode.ErrorGetTagFail
+		}
+		return err
 	}
 	return nil
 }
