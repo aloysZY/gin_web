@@ -3,8 +3,9 @@ package params
 // binding 是 gin 框架使用 validator 做参数校验
 // form 是前端传入参数匹配结构体解析
 
+// CountArticleRequest 查询文章数量
 type CountArticleRequest struct {
-	State uint8 `json:"state" form:"state,default=1" binding:"oneof=0 1" example:"1"`
+	State uint8 `json:"state" form:"state"`
 	// TagId uint64 `json:"tag_id" form:"tag_id" binding:"required"` // 文章标签，根据标签查询数量
 	Title string `json:"title" form:"title"` // 这里想要额外实现一个根据文章名称查询（创建文章的时候可以没有设置标签）
 }
@@ -16,8 +17,7 @@ type ListArticleRequest struct {
 	Title string `json:"title" form:"title"` // 这里想要额外实现一个根据文章名称查询（创建文章的时候可以没有设置标签）
 }
 
-// CreateArticleRequest
-// 创建文章
+// CreateArticleRequest 创建文章
 type CreateArticleRequest struct {
 	State         uint8  `json:"state" form:"state,default=1" binding:"oneof=0 1" example:"1"`
 	ArticleId     uint64 `json:"article_id" form:"article_id" swaggerignore:"true"`
@@ -27,4 +27,9 @@ type CreateArticleRequest struct {
 	Desc          string `json:"desc" form:"desc" binding:"required,min=2,max=255"`              // 文章描述
 	Content       string `json:"content" form:"content" binding:"required,min=2,max=4294967295"` // 文章内容
 	CoverImageUrl string `json:"cover_image_url" form:"cover_image_url" binding:"required,url"`  // 文章封面
+}
+
+// GetArticleRequest 根据 ID 获取单个文章
+type GetArticleRequest struct {
+	ArticleId uint64 `json:"article_id" form:"article_id"`
 }

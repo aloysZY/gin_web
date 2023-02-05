@@ -2,6 +2,8 @@
 package v1
 
 import (
+	"strconv"
+
 	"github.com/aloysZy/gin_web/internal/routers/api/params"
 	"github.com/aloysZy/gin_web/internal/service"
 	"github.com/aloysZy/gin_web/pkg/app"
@@ -75,7 +77,6 @@ func (a Article) Create(c *gin.Context) {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
 	}
-
 	// 获取登录用户 ID
 	userID, err := service.GetUserID(c)
 	if err != nil {
@@ -94,8 +95,43 @@ func (a Article) Create(c *gin.Context) {
 		response.ToErrorResponse(errcode.ErrorCreateArticleFail)
 		return
 	}
-
 	response.ToResponse(gin.H{})
+}
+
+// Get 根据文章 ID 获取单个文章
+// @Summary 根据文章 ID 获取单个文章
+// @Description 根据文章 ID 获取单个文章
+// @Tags 文章
+// @Produce  json
+// @Param id path string false "文章ID" number
+// @Param state query int false "状态" Enums(0, 1) default(1)
+// @Security ApiKeyAuth
+// @Success 200 {object} third_party.Swagger "成功"
+// @Failure 400 {object} errcode.Error "请求错误"
+// @Failure 500 {object} errcode.Error "内部错误"
+// @Router /api/v1/articles/{id} [get]
+func (a Article) Get(c *gin.Context) {
+	response := app.NewResponse(c)
+	// 1.解析参数
+	articleIdStr := c.Param("id")
+	articleId, err := strconv.ParseUint(articleIdStr, 10, 64)
+	if err != nil {
+		response.ToErrorResponse(errcode.InvalidParams)
+		return
+	}
+	// 业务处理
+	svc := service.New(c.Request.Context())
+	article, err := svc.GetArticleByArticleId(articleId)
+	if err != nil {
+		if err == errcode.ErrorNotArticle {
+			response.ToErrorResponse(errcode.ErrorNotArticle)
+			return
+		}
+		response.ToErrorResponse(errcode.ErrorNotArticle.WithDetails(err.Error()))
+		return
+	}
+	// 返回数据
+	response.ToResponse(article)
 }
 
 // 更新文章

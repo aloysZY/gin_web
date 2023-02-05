@@ -37,7 +37,7 @@ func NewRouter() *gin.Engine {
 	// 初始化，以后 api 版本变更，直接更换初始化的方法就行了
 	tag := v1.NewTag()
 	upload := v1.NewUpload()
-	atricle := v1.NewArticle()
+	article := v1.NewArticle()
 	// 鉴权路由
 	auth := api.NewAuth()
 	r.POST("/signup", auth.SignUp)
@@ -58,12 +58,12 @@ func NewRouter() *gin.Engine {
 		apiV1.PUT("/tags/:id", tag.Update)    // 全量更新
 		// apiV1.PATCH("/tags/:id/state", tag.Update) // 更新部分；这个就是改变标签是否可用和PUT重复了
 
-		apiV1.POST("/articles", atricle.Create) // 创建
-		apiV1.GET("/articles", atricle.List)    // 获取多个文章
-		// apiV1.GET("/articles", atricle.Get)           // 获取单个文章
-		// apiV1.GET("/articles", atricle.GetById)       // 根据 ID 获取文章
-		apiV1.DELETE("/articles/:id", atricle.Delete) // 删除
-		apiV1.PUT("/articles/:id", atricle.Update)    // 全量更新
+		apiV1.POST("/articles", article.Create) // 创建
+		apiV1.GET("/articles", article.List)    // 获取多个文章
+		apiV1.GET("/articles/:id", article.Get) // 获取单个文章
+		// apiV1.GET("/articles", article.GetById)       // 根据 ID 获取文章
+		apiV1.DELETE("/articles/:id", article.Delete) // 删除
+		apiV1.PUT("/articles/:id", article.Update)    // 全量更新
 		// apiV1.PATCH("/articles/:id/state") // 更新部分
 
 	}

@@ -8,7 +8,7 @@ import (
 
 // Tag TAG生成返回的数据
 type Tag struct {
-	State  uint8      `json:"-"`             // `json:"state"`         // 状态  1 正常 0为禁用
+	State  uint8      `json:"state"`         // 状态  1 正常 0为禁用
 	TagID  uint64     `json:"tag_id,string"` // 设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真
 	Name   string     `json:"name"`          // 名称
 	*Model `json:"-"` // `json:"model"` // 公共字段

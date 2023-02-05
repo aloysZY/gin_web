@@ -3,7 +3,7 @@ package params
 
 // CountTagRequest 查询标签总数
 type CountTagRequest struct {
-	State uint8  `form:"state,default=1" binding:"oneof=0 1"` // 1 正常 0为禁用
+	State uint8  `form:"state,default=1"` // 1 正常 0为禁用
 	Name  string `form:"name" binding:"max=100"`
 }
 
@@ -28,7 +28,7 @@ type CreateTagRequest struct {
 // https://blog.csdn.net/qq_57467091/article/details/123373790
 // https://blog.csdn.net/qq_39397165/article/details/108173108
 
-// UpdateTagRequest 更新标签
+// UpdateTagRequest 更新标签，标志位变成 1
 type UpdateTagRequest struct {
 	State uint8 `form:"state,default=1" binding:"oneof=0 1" binding:"required" example:"1"` // 状态；可以更新状态为不可用，需要传入
 	// State      uint8  `form:"state" binding:"required,gte=0,lte=1" example:"1"`                // 状态；可以更新状态为不可用，需要传入
@@ -37,7 +37,7 @@ type UpdateTagRequest struct {
 	// Name       string `form:"name" binding:"max=100"`                                       // 名称;要修改的标签名称
 }
 
-// DeleteTagRequest 删除标签
+// DeleteTagRequest 删除标签，删除为变成 1
 type DeleteTagRequest struct {
 	TagId      uint64 `json:"tag_id" form:"tag_id" binding:"required"`
 	ModifiedBy uint64 `json:"modified_by" form:"modified_by" swaggerignore:"true"`

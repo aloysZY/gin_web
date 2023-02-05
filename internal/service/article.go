@@ -1,12 +1,12 @@
 package service
 
 import (
-	"github.com/aloysZy/gin_web/internal/dao"
 	"github.com/aloysZy/gin_web/internal/model"
 	"github.com/aloysZy/gin_web/internal/routers/api/params"
 	"github.com/aloysZy/gin_web/pkg/app"
 	"github.com/aloysZy/gin_web/pkg/errcode"
 	"github.com/aloysZy/gin_web/pkg/setting"
+	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 )
 
@@ -28,15 +28,14 @@ func (svc *Service) CreateArticle(param *params.CreateArticleRequest) error {
 	svc.dao.Engine = svc.dao.Engine.Begin()
 
 	// 执行 dao 创建文章
-	if err = svc.dao.CreateArticle(&dao.Article{
-		State:     param.State,
-		ArticleId: param.ArticleId,
-		// TagId:         param.TagId,
-		CreatedBy:     param.CreatedBy,
+	if err = svc.dao.CreateArticle(&model.Article{
+		State:         param.State,
+		ArticleId:     param.ArticleId,
 		Title:         param.Title,
 		Desc:          param.Desc,
 		Content:       param.Content,
 		CoverImageUrl: param.CoverImageUrl,
+		Model:         &model.Model{CreatedBy: param.CreatedBy},
 	}); err != nil {
 		zap.L().Error("svc.dao.CreateArticle failed", zap.Error(err))
 		return err
@@ -162,3 +161,17 @@ func (svc *Service) ListArticleS(param *params.ListArticleRequest, pager *app.Pa
 // 	}
 // 	return articleTageList, nil
 // }
+
+// GetArticleByArticleId 根据文章 ID 查询单个文章
+func (svc *Service) GetArticleByArticleId(id uint64) (*model.Article, error) {
+	article, err := svc.dao.GetArticleByArticleId(id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			zap.L().Error("svc.dao.GetArticleByArticleId failed", zap.Error(err))
+			return nil, errcode.ErrorNotArticle
+		}
+		zap.L().Error("svc.dao.GetArticleByArticleId failed", zap.Error(err))
+		return nil, err
+	}
+	return article, nil
+}

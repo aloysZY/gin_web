@@ -6,8 +6,8 @@ import (
 
 // ArticleIdTagId 文章和标签关联表
 type ArticleIdTagId struct {
-	ArticleId uint64 `json:"article_id"`
-	TagId     uint64 `json:"tag_id"`
+	ArticleId uint64 `json:"article_id,string"`
+	TagId     uint64 `json:"tag_id,string"`
 	*Model
 }
 

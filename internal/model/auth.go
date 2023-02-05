@@ -5,7 +5,7 @@ import (
 )
 
 type Auth struct {
-	UserId    uint64 `json:"user_id"`
+	UserId    uint64 `json:"user_id,string"`
 	UserName  string `json:"user_name"`
 	AppKey    string `json:"app_key"`
 	AppSecret string `json:"app_secret"`

@@ -8,12 +8,12 @@ import (
 
 // Article 文章结构体，操作数据库
 type Article struct {
-	State         uint8          `json:"-"`               // 状态  1 正常 0为禁用
-	ArticleId     uint64         `json:"article_id"`      // 设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真
-	Title         string         `json:"name"`            // 文章标题
-	Desc          string         `json:"desc"`            // 文章简述
-	CoverImageUrl string         `json:"cover_image_url"` // 封面图片地址
-	Content       string         `json:"content"`         // 文章内容
+	State         uint8          `json:"state"`             // 状态  1 正常 0为禁用 这是一个标志位状态，还是应该返回
+	ArticleId     uint64         `json:"article_id,string"` // 设置 tagID  string解决json解析的时候使用这个类型，解决前端传入和传入前端失真
+	Title         string         `json:"name"`              // 文章标题
+	Desc          string         `json:"desc"`              // 文章简述
+	CoverImageUrl string         `json:"cover_image_url"`   // 封面图片地址
+	Content       string         `json:"content"`           // 文章内容
 	*Model        `json:"model"` // 公共字段
 	// json:"model" 本身是结构体嵌套，不写返回数据和 name 是在一层，写了之后，在一个新层里展示
 }
@@ -114,4 +114,11 @@ func (a Article) CountArticleByTitle(db *gorm.DB) (int, error) {
 		return 0, err
 	}
 	return count, nil
+}
+
+// GetArticleByArticleId 根据文章 ID 获取单个文章
+func (a Article) GetArticleByArticleId(db *gorm.DB) (*Article, error) {
+	var articles Article
+	err := db.Where("article_id = ? AND is_del=?", a.ArticleId, 0).Find(&articles).Error
+	return &articles, err
 }

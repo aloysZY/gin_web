@@ -235,7 +235,7 @@ paths:
     post:
       description: 创建文章接口
       parameters:
-      - description: 创建标签
+      - description: 创建文章
         in: body
         name: object
         required: true
@@ -259,6 +259,42 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 创建文章
+      tags:
+      - 文章
+  /api/v1/articles/{article}:
+    get:
+      description: 根据文章 ID 获取单个文章
+      parameters:
+      - description: 文章ID
+        in: path
+        name: article
+        type: string
+      - default: 1
+        description: 状态
+        enum:
+        - 0
+        - 1
+        in: query
+        name: state
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/third_party.Swagger'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: 根据文章 ID 获取单个文章
       tags:
       - 文章
   /api/v1/tags:
