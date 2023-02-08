@@ -1,6 +1,6 @@
 package dao
 
-import "github.com/aloysZy/gin_web/internal/model"
+import "gin_web/internal/model"
 
 // CreateArticleTag 创建标签和文章关联
 func (d *Dao) CreateArticleTag(articleId, tagId, createdBy uint64) error {

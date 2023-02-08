@@ -4,10 +4,10 @@ package v1
 import (
 	"strconv"
 
-	"github.com/aloysZy/gin_web/internal/routers/api/params"
-	"github.com/aloysZy/gin_web/internal/service"
-	"github.com/aloysZy/gin_web/pkg/app"
-	"github.com/aloysZy/gin_web/pkg/errcode"
+	"gin_web/internal/routers/api/params"
+	"gin_web/internal/service"
+	"gin_web/pkg/app"
+	"gin_web/pkg/errcode"
 	"github.com/gin-gonic/gin"
 )
 

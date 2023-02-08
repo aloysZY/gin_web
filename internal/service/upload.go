@@ -4,9 +4,10 @@ import (
 	"mime/multipart"
 	"os"
 
-	"github.com/aloysZy/gin_web/global"
-	"github.com/aloysZy/gin_web/pkg/errcode"
-	"github.com/aloysZy/gin_web/pkg/upload"
+	"gin_web/global"
+	"gin_web/pkg/errcode"
+	"gin_web/pkg/upload"
+
 	"go.uber.org/zap"
 )
 

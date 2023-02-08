@@ -4,13 +4,15 @@ package routers
 import (
 	"net/http"
 
-	"github.com/aloysZy/gin_web/global"
-	"github.com/aloysZy/gin_web/internal/middleware"
-	"github.com/aloysZy/gin_web/internal/routers/api"
-	v1 "github.com/aloysZy/gin_web/internal/routers/api/v1"
+	"gin_web/global"
+	"gin_web/internal/middleware"
+	"gin_web/internal/routers/api"
+	v1 "gin_web/internal/routers/api/v1"
+
 	"github.com/gin-gonic/gin"
 
-	_ "github.com/aloysZy/gin_web/docs" // 千万不要忘了导入把你上一步生成的docs
+	_ "gin_web/docs" // 千万不要忘了导入把你上一步生成的docs
+
 	gs "github.com/swaggo/gin-swagger"
 	// "github.com/swaggo/gin-swagger/swaggerFiles" //这个项目被下面的替换了
 	"github.com/swaggo/files"

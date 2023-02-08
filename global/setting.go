@@ -2,7 +2,7 @@
 package global
 
 import (
-	"github.com/aloysZy/gin_web/pkg/setting"
+	"gin_web/pkg/setting"
 )
 
 // 配置文件解析到结构体

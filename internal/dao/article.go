@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"github.com/aloysZy/gin_web/internal/model"
-	"github.com/aloysZy/gin_web/pkg/app"
+	"gin_web/internal/model"
+	"gin_web/pkg/app"
 )
 
 // Article 文章结构体，tag 使用形参传参，但是文章内容太大了，使用结构体指针

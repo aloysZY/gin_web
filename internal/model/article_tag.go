@@ -22,6 +22,7 @@ func (at ArticleIdTagId) Create(db *gorm.DB) error {
 	return nil
 }
 
+// ListTagNameByArticleId 根据文章 ID，查询文章名称
 func (at ArticleIdTagId) ListTagNameByArticleId(db *gorm.DB, state uint8) ([]string, error) {
 	// 使用联合查询，在文章和标签关联表中查询到标签 ID，在标签表中根据标签ID，查询标签name,返回到一个列表中
 	var articleTag []string

@@ -3,10 +3,10 @@ package v1
 import (
 	"strconv"
 
-	"github.com/aloysZy/gin_web/internal/service"
-	"github.com/aloysZy/gin_web/pkg/app"
-	"github.com/aloysZy/gin_web/pkg/errcode"
-	"github.com/aloysZy/gin_web/pkg/upload"
+	"gin_web/internal/service"
+	"gin_web/pkg/app"
+	"gin_web/pkg/errcode"
+	"gin_web/pkg/upload"
 	"github.com/gin-gonic/gin"
 )
 

@@ -3,11 +3,11 @@ package service
 import (
 	"strconv"
 
-	"github.com/aloysZy/gin_web/internal/model"
-	"github.com/aloysZy/gin_web/internal/routers/api/params"
-	"github.com/aloysZy/gin_web/pkg/app"
-	"github.com/aloysZy/gin_web/pkg/errcode"
-	"github.com/aloysZy/gin_web/pkg/setting"
+	"gin_web/internal/model"
+	"gin_web/internal/routers/api/params"
+	"gin_web/pkg/app"
+	"gin_web/pkg/errcode"
+	"gin_web/pkg/setting"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 )

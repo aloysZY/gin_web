@@ -4,7 +4,7 @@ package app
 import (
 	"net/http"
 
-	"github.com/aloysZy/gin_web/pkg/errcode"
+	"gin_web/pkg/errcode"
 	"github.com/gin-gonic/gin"
 )
 

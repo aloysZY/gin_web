@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"github.com/aloysZy/gin_web/global"
-	"github.com/aloysZy/gin_web/pkg/app"
-	"github.com/aloysZy/gin_web/pkg/auth"
-	"github.com/aloysZy/gin_web/pkg/errcode"
+	"gin_web/global"
+	"gin_web/pkg/app"
+	"gin_web/pkg/auth"
+	"gin_web/pkg/errcode"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )

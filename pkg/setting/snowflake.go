@@ -4,7 +4,7 @@ package setting
 import (
 	"time"
 
-	"github.com/aloysZy/gin_web/pkg/errcode"
+	"gin_web/pkg/errcode"
 	"github.com/sony/sonyflake"
 )
 

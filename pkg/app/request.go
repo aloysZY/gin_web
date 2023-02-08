@@ -4,7 +4,7 @@ package app
 import (
 	"strings"
 
-	"github.com/aloysZy/gin_web/pkg/setting"
+	"gin_web/pkg/setting"
 	"github.com/gin-gonic/gin"
 	val "github.com/go-playground/validator/v10"
 	"go.uber.org/zap"

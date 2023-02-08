@@ -1,6 +1,6 @@
 package dao
 
-import "github.com/aloysZy/gin_web/internal/model"
+import "gin_web/internal/model"
 
 func (d *Dao) CreateAuth(userId uint64, username, appKey, appSecret string) error {
 	auth := model.Auth{UserId: userId, UserName: username, AppKey: appKey, AppSecret: appSecret}

@@ -3,7 +3,8 @@ package middleware
 import (
 	"context"
 
-	"github.com/aloysZy/gin_web/global"
+	"gin_web/global"
+
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/uber/jaeger-client-go"
 

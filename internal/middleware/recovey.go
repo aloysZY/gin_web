@@ -10,8 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aloysZy/gin_web/global"
-	"github.com/aloysZy/gin_web/pkg/logger"
+	"gin_web/global"
+	"gin_web/pkg/logger"
+
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )

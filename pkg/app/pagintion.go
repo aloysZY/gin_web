@@ -3,7 +3,8 @@ package app
 import (
 	"strconv"
 
-	"github.com/aloysZy/gin_web/global"
+	"gin_web/global"
+
 	"github.com/gin-gonic/gin"
 )
 

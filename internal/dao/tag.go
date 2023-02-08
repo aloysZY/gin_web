@@ -2,8 +2,8 @@
 package dao
 
 import (
-	"github.com/aloysZy/gin_web/internal/model"
-	"github.com/aloysZy/gin_web/pkg/app"
+	"gin_web/internal/model"
+	"gin_web/pkg/app"
 )
 
 // 聚合数据库操作需要的信息

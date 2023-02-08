@@ -3,8 +3,9 @@ package service
 import (
 	"context"
 
-	"github.com/aloysZy/gin_web/global"
-	"github.com/aloysZy/gin_web/internal/dao"
+	"gin_web/global"
+	"gin_web/internal/dao"
+
 	otgorm "github.com/eddycjy/opentracing-gorm"
 	"github.com/jinzhu/gorm"
 )

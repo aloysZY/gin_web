@@ -1,9 +1,10 @@
 package middleware
 
 import (
-	"github.com/aloysZy/gin_web/pkg/app"
-	"github.com/aloysZy/gin_web/pkg/errcode"
-	"github.com/aloysZy/gin_web/pkg/limiter"
+	"gin_web/pkg/app"
+	"gin_web/pkg/errcode"
+	"gin_web/pkg/limiter"
+
 	"github.com/gin-gonic/gin"
 )
 

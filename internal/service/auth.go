@@ -1,11 +1,12 @@
 package service
 
 import (
-	"github.com/aloysZy/gin_web/global"
-	"github.com/aloysZy/gin_web/internal/routers/api/params"
-	"github.com/aloysZy/gin_web/pkg/errcode"
-	"github.com/aloysZy/gin_web/pkg/scrypt"
-	"github.com/aloysZy/gin_web/pkg/setting"
+	"gin_web/global"
+	"gin_web/internal/routers/api/params"
+	"gin_web/pkg/errcode"
+	"gin_web/pkg/scrypt"
+	"gin_web/pkg/setting"
+
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )

@@ -4,8 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/aloysZy/gin_web/pkg/app"
-	"github.com/aloysZy/gin_web/pkg/errcode"
+	"gin_web/pkg/app"
+	"gin_web/pkg/errcode"
+
 	"github.com/gin-gonic/gin"
 )
 

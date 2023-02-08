@@ -4,7 +4,8 @@ package logger
 import (
 	"os"
 
-	"github.com/aloysZy/gin_web/global"
+	"gin_web/global"
+
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

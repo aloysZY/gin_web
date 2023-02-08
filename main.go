@@ -12,12 +12,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/aloysZy/gin_web/global"
-	"github.com/aloysZy/gin_web/internal/model"
-	"github.com/aloysZy/gin_web/internal/routers"
-	"github.com/aloysZy/gin_web/pkg/limiter"
-	"github.com/aloysZy/gin_web/pkg/logger"
-	"github.com/aloysZy/gin_web/pkg/setting"
+	"gin_web/global"
+	"gin_web/internal/model"
+	"gin_web/internal/routers"
+	"gin_web/pkg/limiter"
+	"gin_web/pkg/logger"
+	"gin_web/pkg/setting"
 )
 
 var (

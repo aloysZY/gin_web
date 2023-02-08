@@ -7,8 +7,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/aloysZy/gin_web/global"
-	"github.com/aloysZy/gin_web/pkg/util"
+	"gin_web/global"
+	"gin_web/pkg/util"
 )
 
 type FileType int

@@ -3,7 +3,8 @@ package auth
 import (
 	"time"
 
-	"github.com/aloysZy/gin_web/global"
+	"gin_web/global"
+
 	"github.com/golang-jwt/jwt/v4"
 )
 

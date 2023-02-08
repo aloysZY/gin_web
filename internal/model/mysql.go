@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/aloysZy/gin_web/global"
-	"github.com/aloysZy/gin_web/pkg/setting"
+	"gin_web/global"
+	"gin_web/pkg/setting"
+
 	otgorm "github.com/eddycjy/opentracing-gorm"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"

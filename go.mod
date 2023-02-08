@@ -1,9 +1,10 @@
-module github.com/aloysZy/gin_web
+module gin_web
 
-go 1.19
+go 1.20
 
 require (
 	github.com/eddycjy/opentracing-gorm v0.0.0-20200209122056-516a807d2182
+	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gin-gonic/gin v1.8.2
 	github.com/go-playground/locales v0.14.0
 	github.com/go-playground/universal-translator v0.18.0
@@ -20,6 +21,7 @@ require (
 	github.com/swaggo/swag v1.8.9
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
 	go.uber.org/zap v1.21.0
+	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
@@ -28,7 +30,6 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
-	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
@@ -61,7 +62,6 @@ require (
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
-	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/text v0.5.0 // indirect

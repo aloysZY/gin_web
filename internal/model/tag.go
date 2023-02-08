@@ -2,7 +2,7 @@
 package model
 
 import (
-	"github.com/aloysZy/gin_web/pkg/errcode"
+	"gin_web/pkg/errcode"
 	"github.com/jinzhu/gorm"
 )
 
