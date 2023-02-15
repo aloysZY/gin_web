@@ -11,7 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	_ "gin_web/docs" // 千万不要忘了导入把你上一步生成的docs
+	_ "gin_web/internal/swagger" // 千万不要忘了导入把你上一步生成的docs
 
 	gs "github.com/swaggo/gin-swagger"
 	// "github.com/swaggo/gin-swagger/swaggerFiles" //这个项目被下面的替换了

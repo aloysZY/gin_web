@@ -6,6 +6,7 @@ import (
 	"gin_web/pkg/app"
 	"gin_web/pkg/auth"
 	"gin_web/pkg/errcode"
+
 	"github.com/gin-gonic/gin"
 )
 
